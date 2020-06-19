@@ -1,5 +1,6 @@
-# 步骤一：导入HttpResponse
+import json
 from django.http import HttpResponse
+from django.views import View
 
 
 # 创建函数
@@ -12,8 +13,34 @@ def index_page(request):
     :param request:
     :return:
     """
-    return HttpResponse('<h2>欢迎</h2>')
+    if request.method == 'GET':
+        return HttpResponse('<h2>GET请求：欢迎进入首页</h2>')
+    elif request.method == 'POST':
+        return HttpResponse('<h2>POST请求：欢迎进入首页</h2>')
+    elif request.method == 'PUT':
+        pass
+
 
 def index_page2(request):
     """定义一个视图"""
     return HttpResponse('<h2>欢迎进入首页</h2>')
+
+
+class IndexPage(View):  # 继承Django中的View
+    """类视图"""
+
+    def get(self,request):
+        """get的业务逻辑"""
+        return HttpResponse('<h2>GET请求：欢迎进入首页</h2>')
+
+    def post(self,request):
+        # (1)可以使用request.POST的方法，去获取application/x-www-urlencoded类型参数
+        # (2)可以使用request.body的方法，去获取application/json类型参数
+        data_dic = json.loads(request.body, encoding='utf-8')
+        return HttpResponse('<h2>POST请求：欢迎{}!</h2>'.format(data_dic['name']))
+
+    def put(self,request):
+        return HttpResponse('<h2>PUT请求：欢迎进入首页</h2>')
+
+    def delete(self,request):
+        return HttpResponse('<h2>DELETE请求：欢迎进入首页</h2>')
