@@ -16,7 +16,8 @@ urlpatterns = [
     path('index2/', index_page2),
     # 类视图定义路由
     # （1）path函数的第二个参数为类视图名.as_view()
-    path('index3/',IndexPage.as_view()),
+    path('index3/<int:pk>/',IndexPage.as_view()),
     # 类名+as_view()：会自动根据请求方法去调用指定的实例方法
     # 如：是get请求就会自动去调用get实例方法
+    # 可以使用<url类型转化器:路径参数名>
 ]
