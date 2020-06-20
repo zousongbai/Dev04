@@ -36,10 +36,11 @@ class IndexPage(View):  # 继承Django中的View
     def post(self,request):
         # (1)可以使用request.POST的方法，去获取application/x-www-urlencoded类型参数
         # (2)可以使用request.body的方法，去获取application/json类型参数
+        #（3）方法三：可以使用request.META方法，获取请求头参数，key为HTTP_请求头的大写
         data_dic = json.loads(request.body, encoding='utf-8')
         return HttpResponse('<h2>POST请求：欢迎{}!</h2>'.format(data_dic['name']))
 
-    def put(self,request):
+    def put (self,request):
         return HttpResponse('<h2>PUT请求：欢迎进入首页</h2>')
 
     def delete(self,request):
