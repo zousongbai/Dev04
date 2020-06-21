@@ -78,10 +78,22 @@ WSGI_APPLICATION = 'Dev04.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# 需要在全局settings.py中的DATABASES字典中来配置数据库的信息
 DATABASES = {
+    # 在Django中数据库的标识
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 指定数据库使用的引擎
+        'ENGINE': 'django.db.backends.mysql',
+        # 指定数据库的名称
+        'NAME': 'dev04',
+        # 指定连接的数据库主机地址：域名和IP都可以
+        'HOST':'localhost',
+        # 指定数据库的连接端口号：默认3306
+        'PORT':3306,
+        #  指定用户名
+        'USER':'root',
+        #   数据库密码
+        'PASSWORD':'123456'
     }
 }
 
