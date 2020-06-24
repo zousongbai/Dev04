@@ -95,3 +95,7 @@ class Projects(models.Model):
     # ①生成迁移脚本，放在projects/migrations目录中：python manage.py makemigrations
     # ②执行迁移脚本：python manage.py migrate
 
+
+    def __str__(self):
+        """打印对象的时候，会自动返回，并且返回一定时字符串"""
+        return f"<{self.name}>" # 把项目名称填充称为一个字符串后返回
