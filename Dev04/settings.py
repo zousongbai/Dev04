@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     # 注册子应用
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
-    'projects.apps.ProjectsConfig'
+    'projects.apps.ProjectsConfig',
+    'interfaces', # 注册子应用，可以直接使用子应用名
 ]
 
 MIDDLEWARE = [

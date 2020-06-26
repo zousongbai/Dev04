@@ -50,8 +50,8 @@ class IndexPage(View):  # 继承Django中的View
         # ①模型类的对象的属性怎样做？模型类的字段名作为参数名
         # ②id：可以不加，因为是自增的主键
         # ③create_time和update_time：自动添加
-        # project_obj = Projects(name='xxx项目4', leader='xxx项目负责人4',
-        #                        tester='xxx测试4', programmer='xxx研发4')
+        # project_obj = Projects(name='xxx项目2', leader='xxx项目负责人2',
+        #                        tester='xxx测试2', programmer='xxx研发2')
         #
         # # （2）步骤二：需要调用模型类对象的save()方法，去提交
         # project_obj.save()
@@ -69,7 +69,7 @@ class IndexPage(View):  # 继承Django中的View
         # ①数据表中的一条记录就是模型类的一个对象
         # ②所以读取是用：模型类名.objects.get去读取，读取后数据是模型类对象
         # 读取id为3的数据
-        # project_obj=Projects.objects.get(id=3)
+        # project_obj=Projects.objects.get(id=1)
         #
         # # （2）步骤二：再更新
         # project_obj.name='某某知名项目'
@@ -86,7 +86,7 @@ class IndexPage(View):  # 继承Django中的View
         # 1、删除的两种方法
         # 1.1、可以使用模型类对象.delete()方法删除
         # （1）步骤一：先查询出来
-        # project_obj=Projects.objects.get(id=3)
+        # project_obj=Projects.objects.get(id=1)
         # # （2）步骤二：再删除，不需要提交，会自动提交
         # one=project_obj.delete()
 
@@ -96,15 +96,42 @@ class IndexPage(View):  # 继承Django中的View
 
         # 五、查询（C）　
         # 1、使用object管理器来查询　
-        # （1）get方法查询：
+        # 1.1、get方法查询：
         # ①一般只能使用主键或者唯一键作为查询条件。
         # ②get方法，如果查询的记录为空和多条记录，那么会抛出异常。
         # ③返回的模型类对象，会自动提交，不需要save方法
-        project_obj=Projects.objects.get(id=1)
+        # project_obj=Projects.objects.get(id=1)
+        #
 
-        Projects.objects.filter(id__gte=2) # id__gte：打印等于
 
-        Projects.objects.filter(name)
+
+        # 1.2、all()方法：获取所有的记录　　
+        # ①返回QuerySet查询集对象
+        # ②查询集对象类似于列表，支持列表中的某些操作
+        # ③支持数字索引取值（负索引不支持）、切片（返回QuerySet查询集对象）
+        # ④支持for循环迭代，每次迭代取出一个模型类对象
+        # ⑤QuerySet查询集对象.first()获取第一个记录，QuerySet查询集对象.last()方法获取最后一条记录
+        # ⑥QuerySet查询集对象.count()方法，获取查询集中数据记录条数
+        # ⑦支持惰性查询：只有真正去使用数据时，才会去数据库中执行sql语句，为了性能要求
+        # ⑧支持链式调用
+        # project_obj=Projects.objects.all()
+
+
+        # 1.3、filter方法获取某些数量的记录　　
+        # ①filter支持多个过滤表达式，格式：字段名__过滤表达式
+        # 1）字段名__startswith：过滤以xxx开头的字符串
+        # 2）字段名__istartswith：忽略大小写，过滤以xxx开头的字符串
+        # 3）字段名__endswith：过滤以xxx结尾的字符串
+        # 4）字段名__iendswith：忽略大小写，过滤以xxx结尾的字符串
+        # 5）字段名__gt：大于，__gte：大于等于，__le：小于，__lte：小于等于
+        # 6）字段名 = 条件与字段名__exact等价，在django ORM中有一个内置的变量pk，为数据库模型类的主键别名
+        # 7）__contains、__icontains、__in、__isnull
+        # 8)如果没有指定的记录，会返回空查询集
+        # Projects.objects.filter()
+
+        # ②exclude与filter是反向关系，与filter条件一样
+        # Projects.objects.exclude()
+        # Projects.objects.raw() # 原生的sql语句
         return HttpResponse('<h2>POST请求：欢迎{}!</h2>')
 
 
