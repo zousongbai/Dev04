@@ -1,4 +1,5 @@
-import json
+import random
+import string
 from django.http import HttpResponse
 from django.views import View
 
@@ -8,9 +9,15 @@ from .models import Projects  # 点：表示在view当前的路径下面
 # 方法二：从子应用中的projects/models.py导入
 from projects.models import Projects
 
+# 导入模型类
+from interfaces.models import Interfaces
 
 # 查看生成的sql
-from django.db import connection # 导入django.db中的connection，connection有一个queries属性
+from django.db import connection  # 导入django.db中的connection，connection有一个queries属性
+
+# 引入Q表达式
+from django.db.models import Q, Count
+
 
 # 创建函数
 def index_page(request):
@@ -38,9 +45,28 @@ def index_page2(request):
 class IndexPage(View):  # 继承Django中的View
     """类视图"""
 
-    def get(self, request, pk):
-        """get的业务逻辑"""
-        return HttpResponse('<h2>GET请求：欢迎进入首页</h2>')
+    def get(self, request):
+        one_str = string.ascii_letters + string.digits
+        # ①ascii_letters：字母（包含小写和大写）
+        # ②ascii_lowercase：小写字母
+        # ③ascii_uppercase：大写
+        # ④digits：数字：1-9的字符串
+        # 使用for循环添加测试数据
+        for i in range(20):
+            # 每次从one_str字符串中选5次，再组成列表
+            one_list = [random.choice(one_str) for i in range(5)]
+
+            # 将列表拼接成一个字符串：接口的名称
+            one_str_tmp = ''.join(one_list)
+            one_dict = {
+                'name': one_str_tmp,  # 接口的名称
+                'tester': f'xxx测试0{i}',  # 测试人员
+                'desc': 'xxx描述',  # 描述
+                'projects_id': random.choice([2, 3, 4])  # 外键
+            }
+            # 添加一条数据
+            one_obj = Interfaces.objects.create(**one_dict)
+        return HttpResponse('创建成功！')
 
     def post(self, request):
         # 二、c（create） ：创建
@@ -50,8 +76,8 @@ class IndexPage(View):  # 继承Django中的View
         # ①模型类的对象的属性怎样做？模型类的字段名作为参数名
         # ②id：可以不加，因为是自增的主键
         # ③create_time和update_time：自动添加
-        # project_obj = Projects(name='xxx项目2', leader='xxx项目负责人2',
-        #                        tester='xxx测试2', programmer='xxx研发2')
+        # project_obj = Projects(name='xxx项目4', leader='xxx项目负责人4',
+        #                        tester='xxx测试4', programmer='xxx研发4')
         #
         # # （2）步骤二：需要调用模型类对象的save()方法，去提交
         # project_obj.save()
@@ -90,7 +116,6 @@ class IndexPage(View):  # 继承Django中的View
         # # （2）步骤二：再删除，不需要提交，会自动提交
         # one=project_obj.delete()
 
-
         # # 1.2、可以使用模型类名.object.filter().delete()：即先查询出来，再调用delete()方法
         # project_obj=Projects.objects.filter(id=2).delete()
 
@@ -103,8 +128,6 @@ class IndexPage(View):  # 继承Django中的View
         # project_obj=Projects.objects.get(id=1)
         #
 
-
-
         # 1.2、all()方法：获取所有的记录　　
         # ①返回QuerySet查询集对象
         # ②查询集对象类似于列表，支持列表中的某些操作
@@ -115,7 +138,6 @@ class IndexPage(View):  # 继承Django中的View
         # ⑦支持惰性查询：只有真正去使用数据时，才会去数据库中执行sql语句，为了性能要求
         # ⑧支持链式调用
         # project_obj=Projects.objects.all()
-
 
         # 1.3、filter方法获取某些数量的记录　　
         # ①filter支持多个过滤表达式，格式：字段名__过滤表达式
@@ -132,6 +154,53 @@ class IndexPage(View):  # 继承Django中的View
         # ②exclude与filter是反向关系，与filter条件一样
         # Projects.objects.exclude()
         # Projects.objects.raw() # 原生的sql语句
+
+        # 二、关联查询
+        # （1）通过从表的信息获取父表的记录
+        # （2）从表模型类名小写__从表字段名__查询表达式
+        # 1、实例：查询出所有接口名称以数字开头的接口名称所对应的项目
+        # project_obj = Projects.objects.filter(interfaces__name__regex='^[0-9]') # （1）通过从表的信息获取父表的记录
+        #
+        # # 备注：
+        # # ①interfaces：是从表的模型类名小写，会自动作为父表的查询条件去使用
+        # # ②interfaces__name：从表的模型类名小写两个下划线，再加上从表的字段名，最后使用正则regex去匹配
+        # # ③'^[0-9]'：以数字开头
+        #
+        # # （3）惰性：查询集对象，只有去使用的时候，才会执行sql语句　　
+        # for item in project_obj:
+        #     print(item.name)
+
+        # 三、逻辑关系查询　
+        # （1）与的关系
+        # ①查询集支持链式调用，可以使用多个filter()方法去过滤，同一行中的多个filter()是“与”的关系
+        # ②一个filter()当中，可以通过逗号分开，写多个查询条件，每个查询条件是“与”的关系
+        # 1、实例：查找项目名称以x开头，programmer字段中要包含4
+        # # prject_obj=Projects.objects.filter(name__startswith='x').filter(programmer__contains='4')
+        # # 备注：查询集支持链式调用，可以使用多个filter()方法去过滤，同一行中的多个filter()是“与”的关系
+        # prject_obj = Projects.objects.filter(name__startswith='x',programmer__contains='4')
+        # # 备注：一个filter()当中，可以通过逗号分开，写多个查询条件，每个查询条件是“与”的关系
+
+        # （2）或的关系
+        # ①格式：.filter(Q(查询条件1)| Q(查询条件2))
+        # 2、实例：查询leader当中包含1，或者programmer字段中要包含4
+        # prject_obj = Projects.objects.filter(Q(leader__contains='1') | Q(programmer__contains='4'))
+
+
+        # （3）聚合查询：annotate
+        # 3、计算name字段和
+        # prject_obj=Projects.objects.annotate(Count('name'))
+
+        # 四、特殊操作　
+        # （1）排序
+        # ①使用order_by来进行排序
+        # ②可以使用字段名作为排序条件，默认为升序
+        # ③使用减号（-），作为降序
+        # ④可以同时指定多个排序条件
+        # 1、实例：以id从大到小进行排序
+        # Projects.objects.all().order_by('-id')
+        # 获取所有的查询集
+        # 2、实例：先以id进行降序查询，再以name为升序查询　　
+        Projects.objects.all().order_by('-id','name')
         return HttpResponse('<h2>POST请求：欢迎{}!</h2>')
 
 
