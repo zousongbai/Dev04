@@ -1,213 +1,210 @@
-import random
-import string
-from django.http import HttpResponse
-from django.views import View
+import json
 
-# 导入模型类的方法：
-# 方法一：通过.models的方式进行导入
-from .models import Projects  # 点：表示在view当前的路径下面
-# 方法二：从子应用中的projects/models.py导入
+from django.http import JsonResponse
+from django.views import View
 from projects.models import Projects
 
-# 导入模型类
-from interfaces.models import Interfaces
 
-# 查看生成的sql
-from django.db import connection  # 导入django.db中的connection，connection有一个queries属性
-
-# 引入Q表达式
-from django.db.models import Q, Count
-
-
-# 创建函数
-def index_page(request):
+# 使用两个类视图：是因为有的接口需要传递id，有的接口不需要传递id，把传id的放在一个类似图中，不传id的放在另外一个类视图中
+class ProjectsView(View):
     """
-    视图函数：必须按照下面的规范：
-    1、第一个参数为HttpRequest对象或者HttpRequest子类的对象,无需手动传递
-    2、一般会使用request
-    3、一定要返回HttpResponse对象或者HttpResponse子类对象
-    :param request:
-    :return:
+    一、需求：需要设置5个接口，来提供前端使用对项目的增删改查操作
+    （1）需要能获取到项目的列表数据（获取多条项目的数据或者所有数据）
+    ①url：/projects/
+    ②method：GET
+    ③response data：返回的数据json格式
+    （3）能够创建项目（创建一个项目）
+    ①url：/projects/
+    ②method：POST
+    ③request data：请求的数据json格式
+    ④response data：返回的数据json格式 1）{msg:'创建成功',code:0}
     """
-    if request.method == 'GET':
-        return HttpResponse('<h2>GET请求：欢迎进入首页</h2>')
-    elif request.method == 'POST':
-        return HttpResponse('<h2>POST请求：欢迎进入首页</h2>')
-    elif request.method == 'PUT':
-        pass
 
-
-def index_page2(request):
-    """定义一个视图"""
-    return HttpResponse('<h2>欢迎进入首页</h2>')
-
-
-class IndexPage(View):  # 继承Django中的View
-    """类视图"""
-
-    def get(self, request):
-        one_str = string.ascii_letters + string.digits
-        # ①ascii_letters：字母（包含小写和大写）
-        # ②ascii_lowercase：小写字母
-        # ③ascii_uppercase：大写
-        # ④digits：数字：1-9的字符串
-        # 使用for循环添加测试数据
-        for i in range(20):
-            # 每次从one_str字符串中选5次，再组成列表
-            one_list = [random.choice(one_str) for i in range(5)]
-
-            # 将列表拼接成一个字符串：接口的名称
-            one_str_tmp = ''.join(one_list)
+    def get(self, request):  # request:需要request接收，接收http的request对象
+        """获取项目的所有信息"""
+        # （1）步骤一：从数据库中获取所有的项目信息（返回的是查询集）
+        projects_object = Projects.objects.all()
+        # （2）步骤二：需要将模型类对象（查询集）转化为嵌套字典的列表
+        python_data = []  # 嵌套字典的列表
+        python_dict = {}
+        for obj in projects_object:
             one_dict = {
-                'name': one_str_tmp,  # 接口的名称
-                'tester': f'xxx测试0{i}',  # 测试人员
-                'desc': 'xxx描述',  # 描述
-                'projects_id': random.choice([2, 3, 4])  # 外键
+                'id': obj.id,
+                'name': obj.name,
+                'leader': obj.leader,
             }
-            # 添加一条数据
-            one_obj = Interfaces.objects.create(**one_dict)
-        return HttpResponse('创建成功！')
+            # 把所有的数据放在列表里面
+            python_data.append(one_dict)
+        python_dict['msg'] = '获取数据成功'
+        python_dict['code'] = 1
+        # 将列表作为值
+        python_dict['data'] = python_data
+
+        # （3）步骤三：向前端返回json格式的数据
+        return JsonResponse(python_dict, safe=False, status=200)
+        # 备注：列表必须加safe，列表可以不加safe
 
     def post(self, request):
-        # 二、c（create） ：创建
-        # 1、创建的两种方法：
-        # 1.1、使用模型类对象来创建
-        # （1）步骤一：使用模型类对象来创建，会创建一个Projects模型类对象，但是还未提交
-        # ①模型类的对象的属性怎样做？模型类的字段名作为参数名
-        # ②id：可以不加，因为是自增的主键
-        # ③create_time和update_time：自动添加
-        # project_obj = Projects(name='xxx项目4', leader='xxx项目负责人4',
-        #                        tester='xxx测试4', programmer='xxx研发4')
-        #
-        # # （2）步骤二：需要调用模型类对象的save()方法，去提交
-        # project_obj.save()
+        """创建项目"""
+        # （1）步骤一：获取新的项目信息，并转化为python中的数据类型（字典或者嵌套字典的列表）
+        # 因为：需要将前端传递的数据进行校验，或做数据保存，更加方便的获取到前端传递的数据，所以有必要转化为python当中的数据类型
 
-        # 1.2、可以使用查询集的create方法来创建
-        # （1）使用模型类名.objects.create()方法
-        # （2）objects是manager对象，用于对数据进行操作
-        # project_obj=Projects.objects.create(name='xxx项目5', leader='xxx项目负责人5',
-        #                        tester='xxx测试5', programmer='xxx研发5')
+        # 请求数据
+        request_data = request.body  # json格式数据往往存放在body里面
 
-        # 三、u（update）：更新
-        # 1、更新的两种方法：
-        # 1.1、先获取模型类对象，然后修改某些字段，再调用save方法保存
-        # （1）步骤一：先读取。
-        # ①数据表中的一条记录就是模型类的一个对象
-        # ②所以读取是用：模型类名.objects.get去读取，读取后数据是模型类对象
-        # 读取id为3的数据
-        # project_obj=Projects.objects.get(id=1)
-        #
-        # # （2）步骤二：再更新
-        # project_obj.name='某某知名项目'
-        #
-        # # （3）步骤三：调用save方法保存
-        # project_obj.save()
+        try:
+            # 请求体的数据，转化成python中的数据类型（字典或者嵌套字典的列表）
+            python_data = json.loads(request_data)
+        except Exception as e:
+            # 不是json则报错，并返回结果
+            result = {
+                'msg': '参数有误',
+                'code': 0
+            }
+            return JsonResponse(result, status=400)
 
-        # 1.2、可以使用模型类名.object.filter().update(字段名=修改的值)：即先查询出来，再调用update()方法
-        # （1）步骤一：查询id为2，返回查询集，Projects.objects.filter(id=2)
-        # （2）步骤二：再去update修改name
-        # Projects.objects.filter(id=2).update(name='某某优秀的项目')
+        # （2）步骤二：校验传递的数据是否正确（非常复杂）
+        if ('name' not in python_data) or ('leader' not in python_data):
+            #  判断name或leader不在python_data中，则报错误
+            result = {
+                'msg': '参数有误',
+                'code': 0
+            }
+            return JsonResponse(result, status=400)
 
-        # 四、d（delete）：删除
-        # 1、删除的两种方法
-        # 1.1、可以使用模型类对象.delete()方法删除
-        # （1）步骤一：先查询出来
-        # project_obj=Projects.objects.get(id=1)
-        # # （2）步骤二：再删除，不需要提交，会自动提交
-        # one=project_obj.delete()
+        # （3）步骤三：创建项目
+        obj = Projects.objects.create(**python_data)
 
-        # # 1.2、可以使用模型类名.object.filter().delete()：即先查询出来，再调用delete()方法
-        # project_obj=Projects.objects.filter(id=2).delete()
+        # （4）步骤四：向前端返回json格式的数据
+        python_dict = {
+            'id': obj.id,
+            'name': obj.name,
+            'leader': obj.leader,
+            'tester': obj.tester,
+            'programmer': obj.programmer,
+            'code': 1,
+            'msg': '创建成功'
+        }
 
-        # 五、查询（C）　
-        # 1、使用object管理器来查询　
-        # 1.1、get方法查询：
-        # ①一般只能使用主键或者唯一键作为查询条件。
-        # ②get方法，如果查询的记录为空和多条记录，那么会抛出异常。
-        # ③返回的模型类对象，会自动提交，不需要save方法
-        # project_obj=Projects.objects.get(id=1)
-        #
-
-        # 1.2、all()方法：获取所有的记录　　
-        # ①返回QuerySet查询集对象
-        # ②查询集对象类似于列表，支持列表中的某些操作
-        # ③支持数字索引取值（负索引不支持）、切片（返回QuerySet查询集对象）
-        # ④支持for循环迭代，每次迭代取出一个模型类对象
-        # ⑤QuerySet查询集对象.first()获取第一个记录，QuerySet查询集对象.last()方法获取最后一条记录
-        # ⑥QuerySet查询集对象.count()方法，获取查询集中数据记录条数
-        # ⑦支持惰性查询：只有真正去使用数据时，才会去数据库中执行sql语句，为了性能要求
-        # ⑧支持链式调用
-        # project_obj=Projects.objects.all()
-
-        # 1.3、filter方法获取某些数量的记录　　
-        # ①filter支持多个过滤表达式，格式：字段名__过滤表达式
-        # 1）字段名__startswith：过滤以xxx开头的字符串
-        # 2）字段名__istartswith：忽略大小写，过滤以xxx开头的字符串
-        # 3）字段名__endswith：过滤以xxx结尾的字符串
-        # 4）字段名__iendswith：忽略大小写，过滤以xxx结尾的字符串
-        # 5）字段名__gt：大于，__gte：大于等于，__le：小于，__lte：小于等于
-        # 6）字段名 = 条件与字段名__exact等价，在django ORM中有一个内置的变量pk，为数据库模型类的主键别名
-        # 7）__contains、__icontains、__in、__isnull
-        # 8)如果没有指定的记录，会返回空查询集
-        # Projects.objects.filter()
-
-        # ②exclude与filter是反向关系，与filter条件一样
-        # Projects.objects.exclude()
-        # Projects.objects.raw() # 原生的sql语句
-
-        # 二、关联查询
-        # （1）通过从表的信息获取父表的记录
-        # （2）从表模型类名小写__从表字段名__查询表达式
-        # 1、实例：查询出所有接口名称以数字开头的接口名称所对应的项目
-        # project_obj = Projects.objects.filter(interfaces__name__regex='^[0-9]') # （1）通过从表的信息获取父表的记录
-        #
-        # # 备注：
-        # # ①interfaces：是从表的模型类名小写，会自动作为父表的查询条件去使用
-        # # ②interfaces__name：从表的模型类名小写两个下划线，再加上从表的字段名，最后使用正则regex去匹配
-        # # ③'^[0-9]'：以数字开头
-        #
-        # # （3）惰性：查询集对象，只有去使用的时候，才会执行sql语句　　
-        # for item in project_obj:
-        #     print(item.name)
-
-        # 三、逻辑关系查询　
-        # （1）与的关系
-        # ①查询集支持链式调用，可以使用多个filter()方法去过滤，同一行中的多个filter()是“与”的关系
-        # ②一个filter()当中，可以通过逗号分开，写多个查询条件，每个查询条件是“与”的关系
-        # 1、实例：查找项目名称以x开头，programmer字段中要包含4
-        # # prject_obj=Projects.objects.filter(name__startswith='x').filter(programmer__contains='4')
-        # # 备注：查询集支持链式调用，可以使用多个filter()方法去过滤，同一行中的多个filter()是“与”的关系
-        # prject_obj = Projects.objects.filter(name__startswith='x',programmer__contains='4')
-        # # 备注：一个filter()当中，可以通过逗号分开，写多个查询条件，每个查询条件是“与”的关系
-
-        # （2）或的关系
-        # ①格式：.filter(Q(查询条件1)| Q(查询条件2))
-        # 2、实例：查询leader当中包含1，或者programmer字段中要包含4
-        # prject_obj = Projects.objects.filter(Q(leader__contains='1') | Q(programmer__contains='4'))
+        return JsonResponse(python_dict, status=201)
 
 
-        # （3）聚合查询：annotate
-        # 3、计算name字段和
-        # prject_obj=Projects.objects.annotate(Count('name'))
+class ProjectDetailView(View):
+    """
+    （2）需要能获取到项目的详情数据（获取前端指定的某一条数据）
+   ①url：/projects/<int:pk>/
+   ②method：GET
+   ③response data：返回的数据json格式
+   （4）能够更新项目（只更新某一个项目）
+   ①url：/projects/<int:pk>/
+   ②method：PUT
+   ③request data：请求的数据json格式
+   ④response data：返回的数据json格式
+   （5）能够删除项目（只删除某一个项目）
+   ①url：/projects/<int:pk>/
+   ②method：DELETE
+   ③request data：请求的数据json格式
+   ④response data：返回的数据json格式 备注：URL相同的说明需要在同一个类视图下面创建不同的实例方法
+    """
+    def get(self,request,pk):
+        """获取项目详情"""
+        # （1）步骤一：校验参数，校验参数pk是否存在
+        try:
+            obj=Projects.objects.get(id=pk) # get：结果没有或返回多条结果都会报错
+        except Exception as e:
+            result = {
+                'msg': '参数有误',
+                'code': 0
+            }
+            return JsonResponse(result, status=400)
 
-        # 四、特殊操作　
-        # （1）排序
-        # ①使用order_by来进行排序
-        # ②可以使用字段名作为排序条件，默认为升序
-        # ③使用减号（-），作为降序
-        # ④可以同时指定多个排序条件
-        # 1、实例：以id从大到小进行排序
-        # Projects.objects.all().order_by('-id')
-        # 获取所有的查询集
-        # 2、实例：先以id进行降序查询，再以name为升序查询　　
-        Projects.objects.all().order_by('-id','name')
-        return HttpResponse('<h2>POST请求：欢迎{}!</h2>')
+        # （2）步骤二：从数据库中获取模型类对象数据
+        python_dict = {
+            'id': obj.id,
+            'name': obj.name,
+            'desc': obj.desc,
+            'code': 1,
+            'msg': '获取成功'
+        }
+        # （3）步骤三：向前端返回json格式的数据
+        return JsonResponse(python_dict)
 
+    def put(self,request,pk):
+        """更新项目"""
+        # （1）步骤一：校验pk值否存在，并获取待更新的模型类对象
+        try:
+            obj=Projects.objects.get(id=pk) # get：结果没有或返回多条结果都会报错
+        except Exception as e:
+            result = {
+                'msg': '参数有误',
+                'code': 0
+            }
+            return JsonResponse(result, status=400)
+        # （2）步骤二：获取新的项目信息并校验
+        request_data = request.body  # json格式数据往往存放在body里面
 
-    def put(self, request, pk):
-        # return HttpResponse('<h2>PUT请求：欢迎进入首页</h2>')
-        one_dict = '{"name":"小青年","age":18}'
-        return HttpResponse(one_dict, content_type='application/json', status=201)
+        try:
+            # 请求体的数据，转化成python中的数据类型（字典或者嵌套字典的列表）
+            python_data = json.loads(request_data)
+        except Exception as e:
+            # 不是json则报错，并返回结果
+            result = {
+                'msg': '参数有误',
+                'code': 0
+            }
+            return JsonResponse(result, status=400)
+        # if ('name' not in python_data) or ('leader' not in python_data):
+        #     #  判断name或leader不在python_data中，则报错误
+        #     result = {
+        #         'msg': '参数有误',
+        #         'code': 0
+        #     }
+        #     return JsonResponse(result, status=400)
 
-    def delete(self, request, pk):
-        return HttpResponse('<h2>DELETE请求：欢迎进入首页</h2>')
+        # （3）步骤三：更新操作
+        # 如果前端传空就更新，如果不为空则更新
+        obj.name=python_data.get('name') or obj.name
+        obj.leader=python_data.get('leader') or obj.leader
+        obj.tester = python_data.get('tester') or obj.tester
+        obj.programmer = python_data.get('programmer') or obj.programmer
+        obj.desc = python_data.get('desc') or obj.desc
+        # 或
+        # Projects.objects.filter(id=pk).update(**python_data)
+
+        # 保存
+        obj.save()
+
+        # （4）步骤四：向前端返回json格式的数据
+
+        python_dict = {
+            'id': obj.id,
+            'name': obj.name,
+            'leader': obj.leader,
+            'tester': obj.tester,
+            'code': 1,
+            'msg': '更新成功'
+        }
+
+        return JsonResponse(python_dict, status=201)
+
+    def delete(self,request,pk):
+        """删除项目"""
+        # （1）步骤一：校验pk值否存在，并获取待删除的模型类对象
+        try:
+            obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
+        except Exception as e:
+            result = {
+                'msg': '参数有误',
+                'code': 0
+            }
+            return JsonResponse(result, status=400)
+
+        # 删除
+        obj.delete()
+
+        # 返回
+        python_data={
+            'msg':'删除成功',
+            'code':1
+        }
+        return JsonResponse(python_data,status=200)
