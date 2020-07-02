@@ -43,8 +43,11 @@ class ProjectsView(View):
         # 创建序列化器对象
         serializer_obj=ProjectsSerializer(instance=projects_object,many=True)
         # 备注：
-        # ①instance：可以接收模型类对象，也可以接收查询集对象。返回多个数据是，此处是查询集对象
-        # ②由于返回多条数据，所以一定要加上many=True
+        # ①可以使用序列化器类来进行序列化输出
+        # 1）instance：可以传模型类对象，
+        # 2）instance：也可以传查询集对象（多条记录）。返回多个数据是，此处是查询集对象，由于返回多条数据，所以一定要加上many=True
+        # ②可以ProjectsSerializer序列化器对象，调用data属性，可以将模型类对象转化为python中的数据类型
+        # ③如果未传递many=True参数，那么序列化器对象.data，返回字典，否则返回一个嵌套字典的列表
 
         # （3）步骤三：向前端返回json格式的数据
         return JsonResponse(serializer_obj.data, safe=False, status=200)

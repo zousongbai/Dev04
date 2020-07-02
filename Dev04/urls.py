@@ -19,5 +19,8 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('page/',include('projects.urls')), # 使用include将子路由的路径传进去
+    path('',include('projects.urls')), # 使用include将子路由的路径传进去
 ]
+# 分析：
+# path('admin/', admin.site.urls)：去匹配，没有匹配，则进入下一行进行匹配
+# path('',include('projects.urls'))：匹配为空，则直接去子路由进行匹配
