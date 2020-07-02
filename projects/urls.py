@@ -6,13 +6,20 @@
 
 from django.urls import path
 
+# 导入视图
+from projects.views import index_page, index_page2
 # 导入类视图
-from projects import views
+from projects.views import IndexPage
 
 urlpatterns = [
-    path('projects/',views.ProjectsView.as_view()),
-    path('projects/<int:pk>/',views.ProjectDetailView.as_view()),
+    path('index/', index_page),
+    path('index2/', index_page2),
+    # 类视图定义路由
+    # （1）path函数的第二个参数为类视图名.as_view()
+    path('index3/<int:pk>/',IndexPage.as_view()),
+    # 类名+as_view()：会自动根据请求方法去调用指定的实例方法
+    # 如：是get请求就会自动去调用get实例方法
+    # 可以使用<url类型转化器:路径参数名>
+
+    path('index3/',IndexPage.as_view()),
 ]
-# 1、url设计的时候，有时候要传递id，有时候不需要传递id，怎样解决
-# 2、为什么需要在路径中传递pk参数？好处是什么？
-# （1）好处一：它帮我们做了一层校验，只要能够到视图里面说明pk一定是正整数
