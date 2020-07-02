@@ -40,9 +40,15 @@ class ProjectsView(View):
         # 将列表作为值
         python_dict['data'] = python_data
 
+        # 创建序列化器对象
+        serializer_obj=ProjectsSerializer(instance=projects_object,many=True)
+        # 备注：
+        # ①instance：可以接收模型类对象，也可以接收查询集对象。返回多个数据是，此处是查询集对象
+        # ②由于返回多条数据，所以一定要加上many=True
+
         # （3）步骤三：向前端返回json格式的数据
-        return JsonResponse(python_dict, safe=False, status=200)
-        # 备注：列表必须加safe，列表可以不加safe
+        return JsonResponse(serializer_obj.data, safe=False, status=200)
+        # 备注：列表必须加safe，字典可以不加safe
 
     def post(self, request):
         """创建项目"""
@@ -128,7 +134,7 @@ class ProjectDetailView(View):
         # }
 
         # ①进行序列化输出，需要创建序列化器类对象
-        serializer_obj=ProjectsSerializer(instance=obj) # instance：传人模型类对象
+        serializer_obj=ProjectsSerializer(instance=obj) # instance：可以接收模型类对象，也可以接收查询集对象。返回单个数据是，此处是模型类对象
         # ②获取数据：使用序列化器对象的data属性
         python_dict=serializer_obj.data
 
