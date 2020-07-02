@@ -3,7 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views import View
 from projects.models import Projects
-
+from .serializers import ProjectsSerializer
 
 # 使用两个类视图：是因为有的接口需要传递id，有的接口不需要传递id，把传id的放在一个类似图中，不传id的放在另外一个类视图中
 class ProjectsView(View):
@@ -119,13 +119,19 @@ class ProjectDetailView(View):
             return JsonResponse(result, status=400)
 
         # （2）步骤二：从数据库中获取模型类对象数据
-        python_dict = {
-            'id': obj.id,
-            'name': obj.name,
-            'desc': obj.desc,
-            'code': 1,
-            'msg': '获取成功'
-        }
+        # python_dict = {
+        #     'id': obj.id,
+        #     'name': obj.name,
+        #     'desc': obj.desc,
+        #     'code': 1,
+        #     'msg': '获取成功'
+        # }
+
+        # ①进行序列化输出，需要创建序列化器类对象
+        serializer_obj=ProjectsSerializer(instance=obj) # instance：传人模型类对象
+        # ②获取数据：使用序列化器对象的data属性
+        python_dict=serializer_obj.data
+
         # （3）步骤三：向前端返回json格式的数据
         return JsonResponse(python_dict)
 
@@ -176,16 +182,18 @@ class ProjectDetailView(View):
 
         # （4）步骤四：向前端返回json格式的数据
 
-        python_dict = {
-            'id': obj.id,
-            'name': obj.name,
-            'leader': obj.leader,
-            'tester': obj.tester,
-            'code': 1,
-            'msg': '更新成功'
-        }
+        # python_dict = {
+        #     'id': obj.id,
+        #     'name': obj.name,
+        #     'leader': obj.leader,
+        #     'tester': obj.tester,
+        #     'code': 1,
+        #     'msg': '更新成功'
+        # }
 
-        return JsonResponse(python_dict, status=201)
+        serializer_obj=ProjectsSerializer(instance=obj) # 序列化输出时，使用这行代码
+
+        return JsonResponse(serializer_obj.data, status=201)
 
     def delete(self,request,pk):
         """删除项目"""

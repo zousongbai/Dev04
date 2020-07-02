@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
     # 注册子应用
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
     'projects.apps.ProjectsConfig',

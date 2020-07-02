@@ -5,8 +5,8 @@
 # @Time         : 2020/7/2 11:51
 
 from rest_framework import serializers
-
-class ProjectsSerializer(serializers.Serializer): # 继承serializers中的Serializer
+# 继承serializers中的Serializer
+class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模型类对象+Serializer
     name=serializers.CharField(max_length=200,label='项目名称',help_text='项目名称')
     leader = serializers.CharField(max_length=200, label='项目负责人', help_text='项目负责人')
     tester = serializers.CharField(max_length=200, label='测试人员', help_text='测试人员')
