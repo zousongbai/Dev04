@@ -72,30 +72,51 @@ class ProjectsView(View):
             }
             return JsonResponse(result, status=400)
 
-        # （2）步骤二：校验传递的数据是否正确（非常复杂）
-        if ('name' not in python_data) or ('leader' not in python_data):
-            #  判断name或leader不在python_data中，则报错误
-            result = {
-                'msg': '参数有误',
-                'code': 0
-            }
-            return JsonResponse(result, status=400)
 
-        # （3）步骤三：创建项目
+
+        # （2）步骤二：校验传递的数据是否正确（非常复杂）
+        # if ('name' not in python_data) or ('leader' not in python_data):
+        #     #  判断name或leader不在python_data中，则报错误
+        #     result = {
+        #         'msg': '参数有误',
+        #         'code': 0
+        #     }
+        #     return JsonResponse(result, status=400)
+
+        ret = {
+            "msg": "",
+            "code": 0
+        }
+
+        # ①步骤一：创建序列化器类对象
+        # 1）把前端传递的json格式参数转化为字典之后，传递给data参数
+        # 2）序列化器对象.is_valid()方法，开始进行校验，如果不调用此方法，那么不会进行校验
+        # 3）调用序列化器对象.is_valid()方法，如果校验成功，返回True，否则返回False
+        # 4）必须调用is_valid()方法之后，才能使用.errors属性去获取报错信息，相当于一个字典
+        serializer_obj1=ProjectsSerializer(data=python_data)
+        if not serializer_obj1.is_valid():
+            # 如果校验失败，将错误信息传给JsonResponse
+            ret['msg'] = '参数有误'
+            ret.update(serializer_obj1.errors)
+            return JsonResponse(ret, safe=False,status=400)
+
+        # （3）步骤三：创建模型类对象
         obj = Projects.objects.create(**python_data)
 
         # （4）步骤四：向前端返回json格式的数据
-        python_dict = {
-            'id': obj.id,
-            'name': obj.name,
-            'leader': obj.leader,
-            'tester': obj.tester,
-            'programmer': obj.programmer,
-            'code': 1,
-            'msg': '创建成功'
-        }
+        # python_dict = {
+        #     'id': obj.id,
+        #     'name': obj.name,
+        #     'leader': obj.leader,
+        #     'tester': obj.tester,
+        #     'programmer': obj.programmer,
+        #     'code': 1,
+        #     'msg': '创建成功'
+        # }
 
-        return JsonResponse(python_dict, status=201)
+        serializer_obj = ProjectsSerializer(instance=obj)
+        # 备注：因为职业应该对象，不是查询集，所以不需要加many=True
+        return JsonResponse(serializer_obj.data, status=201)
 
 
 class ProjectDetailView(View):
