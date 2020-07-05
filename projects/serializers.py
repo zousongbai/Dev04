@@ -5,6 +5,11 @@
 # @Time         : 2020/7/2 11:51
 
 from rest_framework import serializers
+# 导入内置的校验器
+from rest_framework import validators
+# 导入模型类
+from .models import Projects
+
 # 继承serializers中的Serializer
 class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模型类对象+Serializer
 
@@ -20,10 +25,15 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
     （8）CharField字段拥有max_length属性指定该字段不能超过的字节长度
 
     """
-    # 修改必填项的报错信息
 
     # （11）如果某个字段，即没有read_only，也没有write_only，说明此字段既需要反序列化输入，也需要序列化输出
-    name=serializers.CharField(max_length=10,label='项目名称',help_text='项目名称',min_length=2)
+    name=serializers.CharField(max_length=10,label='项目名称',help_text='项目名称',min_length=2,
+                               validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
+    # 备注：
+    # ①validators：需要指定一个列表，
+    # ②UniqueValidator：专门用来做唯一性的校验，
+    # 1)第一个参数queryset：是所有项目的查询集
+    # 2）第二个参数message：校验失败后的报错信息
 
 
 
