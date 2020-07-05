@@ -10,6 +10,27 @@ from rest_framework import validators
 # 导入模型类
 from .models import Projects
 
+def is_name_contain_x(value):
+    """
+    校验name字段是否包含x
+    :param value:前端输入的待校验的值，即前端输入了name值，会自动传递给校验函数的第一个参数value
+    :return:
+    """
+    if 'x' in value:
+        # 如果校验失败，一定要抛出ValidationError异常类对象，第一个参数可以指定具体的报错信息
+        # 如果x包含在value里面，则抛出异常
+        raise serializers.ValidationError('项目名称中不能包含x')
+    """
+    1.3.2、字段不含什么
+    （1）使用validators参数，可以指定校验规则
+    （2）校验规则：
+    ①drf自带的校验规则（UniqueValidator）。
+    1）UniqueValidator第一个参数需要设置为查询集
+    2）UniqueValidator第二个参数message指定校验失败之后的校验信息
+    ②自定义校验规则
+    ③validators列表中的校验规则，会全部执行校验
+    """
+
 # 继承serializers中的Serializer
 class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模型类对象+Serializer
 
@@ -28,7 +49,7 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
 
     # （11）如果某个字段，即没有read_only，也没有write_only，说明此字段既需要反序列化输入，也需要序列化输出
     name=serializers.CharField(max_length=10,label='项目名称',help_text='项目名称',min_length=2,
-                               validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
+                               validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在'),is_name_contain_x])
     # 备注：
     # ①validators：需要指定一个列表，
     # ②UniqueValidator：专门用来做唯一性的校验，
@@ -57,3 +78,18 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
     # label：人性化的说明
     # help_text：API接口的中文提示
     # models中只能指定最大长度，序列化器中既可以指定最大长度，也可以指定最小长度
+
+
+    # 在序列化器类中对单字段进行校验，要求如下：
+    # （1）必须要以validate_作为前缀
+    # （2）校验方法名称为validate_字段名
+    # （3）一定也要返回校验之后的值
+    def validate_name(self,value):
+        """
+        项目名称中不能包含“非常”
+        :param value:
+        :return:类的外面定义的校验不需要返回，类的里面定义的校验需要将这个值返回
+        """
+        if '非常' in value:
+            raise serializers.ValidationError('项目名称中不能包含“非常”')
+        return value
