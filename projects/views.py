@@ -31,20 +31,6 @@ class ProjectsView(View):
         # （1）步骤一：从数据库中获取所有的项目信息（返回的是查询集）
         projects_object = Projects.objects.all()
         # （2）步骤二：需要将模型类对象（查询集）转化为嵌套字典的列表
-        python_data = []  # 嵌套字典的列表
-        python_dict = {}
-        for obj in projects_object:
-            one_dict = {
-                'id': obj.id,
-                'name': obj.name,
-                'leader': obj.leader,
-            }
-            # 把所有的数据放在列表里面
-            python_data.append(one_dict)
-        python_dict['msg'] = '获取数据成功'
-        python_dict['code'] = 1
-        # 将列表作为值
-        python_dict['data'] = python_data
 
         # 创建序列化器对象
         serializer_obj = ProjectsSerializer(instance=projects_object, many=True)
@@ -79,20 +65,9 @@ class ProjectsView(View):
             return JsonResponse(result, status=400)
 
         # （2）步骤二：校验传递的数据是否正确（非常复杂）
-        # if ('name' not in python_data) or ('leader' not in python_data):
-        #     #  判断name或leader不在python_data中，则报错误
-        #     result = {
-        #         'msg': '参数有误',
-        #         'code': 0
-        #     }
-        #     return JsonResponse(result, status=400)
 
-        # ①步骤一：创建序列化器类对象
-        # 1）把前端传递的json格式参数转化为字典之后，传递给data参数
-        # 2）序列化器对象.is_valid()方法，开始进行校验，如果不调用此方法，那么不会进行校验
-        # 3）调用序列化器对象.is_valid()方法，如果校验成功，返回True，否则返回False
-        # 4）必须调用is_valid()方法之后，才能使用.errors属性去获取报错信息，相当于一个字典
-        # 5）必须调用is_valid()方法之后，才能使用.validated_data属性去获取校验通过信息，相当于一个字典
+        # 在定义序列化器对象时，只给data传参
+        # ①使用序列化器对象.save()方法，会自动调用序列化器类中的create()方法
         serializer_obj1 = ProjectsSerializer(data=python_data)
         try:
             # raise_exception=True：当校验失败，会报异常
@@ -102,32 +77,23 @@ class ProjectsView(View):
             ret.update(serializer_obj1.errors)
             return JsonResponse(ret, status=400)
 
-        # if not serializer_obj1.is_valid():
-        #     # 如果校验失败，将错误信息传给JsonResponse
-        #     ret['msg'] = '参数有误'
-        #     ret.update(serializer_obj1.errors)
-        #     return JsonResponse(ret, safe=False,status=400)
-
         # （3）步骤三：创建模型类对象
+        # 将创建项目的逻辑放在序列化器类里面
+        # 方法一：
+        # obj = Projects.objects.create(**serializer_obj1.validated_data)
 
-        obj = Projects.objects.create(**serializer_obj1.validated_data)
+        # 方法二：
+        # obj =Projects(**serializer_obj1.validated_data)
+        # # 备注：validated_data：校验通过的数据
+        # # 提交
+        # obj.save()
+
+        # 在序列化器对象调用save方法时，传递的关键字参数，会自动添加到序列化器类中的create方法，validated_data字典中
+        serializer_obj1.save(user='小狼')
 
         # （4）步骤四：向前端返回json格式的数据
-        # python_dict = {
-        #     'id': obj.id,
-        #     'name': obj.name,
-        #     'leader': obj.leader,
-        #     'tester': obj.tester,
-        #     'programmer': obj.programmer,
-        #     'code': 1,
-        #     'msg': '创建成功'
-        # }
-
-        # serializer_obj = ProjectsSerializer(instance=obj)
-        # 备注：因为职业应该对象，不是查询集，所以不需要加many=True
-
         ret['msg'] = '成功'
-        ret.update(serializer_obj1.validated_data)
+        ret.update(serializer_obj1.data)
         return JsonResponse(ret, status=201)
 
 
@@ -162,21 +128,12 @@ class ProjectDetailView(View):
             return JsonResponse(result, status=400)
 
         # （2）步骤二：从数据库中获取模型类对象数据
-        # python_dict = {
-        #     'id': obj.id,
-        #     'name': obj.name,
-        #     'desc': obj.desc,
-        #     'code': 1,
-        #     'msg': '获取成功'
-        # }
-
         # ①进行序列化输出，需要创建序列化器类对象
         serializer_obj = ProjectsSerializer(instance=obj)  # instance：可以接收模型类对象，也可以接收查询集对象。返回单个数据是，此处是模型类对象
-        # ②获取数据：使用序列化器对象的data属性
-        python_dict = serializer_obj.data
+        # ②获取数据：使用序列化器对象的data属性：serializer_obj.data
 
         # （3）步骤三：向前端返回json格式的数据
-        return JsonResponse(python_dict)
+        return JsonResponse(serializer_obj.data)
 
     def put(self, request, pk):
         """更新项目"""
@@ -189,6 +146,7 @@ class ProjectDetailView(View):
                 'code': 0
             }
             return JsonResponse(result, status=400)
+
         # （2）步骤二：获取新的项目信息并校验
         request_data = request.body  # json格式数据往往存放在body里面
 
@@ -202,21 +160,28 @@ class ProjectDetailView(View):
                 'code': 0
             }
             return JsonResponse(result, status=400)
-        # if ('name' not in python_data) or ('leader' not in python_data):
-        #     #  判断name或leader不在python_data中，则报错误
-        #     result = {
-        #         'msg': '参数有误',
-        #         'code': 0
-        #     }
-        #     return JsonResponse(result, status=400)
 
+        # ①将转换之后的数据python_data，传给data，序列化器对象
+        serializer_obj1 = ProjectsSerializer(data=python_data)
+        try:
+            # raise_exception=True：当校验失败，会报异常
+            # ②序列化器对象调用is_valid方法去做校验
+            serializer_obj1.is_valid(raise_exception=True)
+        except Exception as e:
+            # ③校验之后，如果有异常，就处理异常后，再返回
+            ret['msg'] = '参数有误'
+            ret.update(serializer_obj1.errors)
+            return JsonResponse(ret, status=400)
+
+        # ④如果没有异常，就去更新，更新的数据在obj里面
         # （3）步骤三：更新操作
         # 如果前端传空就更新，如果不为空则更新
-        obj.name = python_data.get('name') or obj.name
-        obj.leader = python_data.get('leader') or obj.leader
-        obj.tester = python_data.get('tester') or obj.tester
-        obj.programmer = python_data.get('programmer') or obj.programmer
-        obj.desc = python_data.get('desc') or obj.desc
+        # ⑤用校验通过的数据（serializer_obj1.validated_data）去获取
+        obj.name = serializer_obj1.validated_data.get('name') or obj.name
+        obj.leader = serializer_obj1.validated_data.get('leader') or obj.leader
+        obj.tester = serializer_obj1.validated_data.get('tester') or obj.tester
+        obj.programmer = serializer_obj1.validated_data.get('programmer') or obj.programmer
+        obj.desc = serializer_obj1.validated_data.get('desc') or obj.desc
         # 或
         # Projects.objects.filter(id=pk).update(**python_data)
 
@@ -224,16 +189,6 @@ class ProjectDetailView(View):
         obj.save()
 
         # （4）步骤四：向前端返回json格式的数据
-
-        # python_dict = {
-        #     'id': obj.id,
-        #     'name': obj.name,
-        #     'leader': obj.leader,
-        #     'tester': obj.tester,
-        #     'code': 1,
-        #     'msg': '更新成功'
-        # }
-
         serializer_obj = ProjectsSerializer(instance=obj)  # 序列化输出时，使用这行代码
 
         return JsonResponse(serializer_obj.data, status=201)
