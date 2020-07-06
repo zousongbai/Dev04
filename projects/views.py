@@ -89,7 +89,8 @@ class ProjectsView(View):
         # obj.save()
 
         # 在序列化器对象调用save方法时，传递的关键字参数，会自动添加到序列化器类中的create方法，validated_data字典中
-        serializer_obj1.save(user='小狼')
+        # serializer_obj1.save(user='小狼')
+        serializer_obj1.save()
 
         # （4）步骤四：向前端返回json格式的数据
         ret['msg'] = '成功'
@@ -202,7 +203,9 @@ class ProjectDetailView(View):
         # serializer_obj = ProjectsSerializer(instance=obj)  # 序列化输出时，使用这行代码
 
         # 调用序列化器对象中的save方法
-        serializer_obj1.save(user='花花')
+        # serializer_obj1.save(user='花花')
+        serializer_obj1.save()
+
         # 使用序列化器对象.data返回
         return JsonResponse(serializer_obj1.data, status=201)
 

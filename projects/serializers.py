@@ -33,7 +33,7 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
     leader = serializers.CharField(max_length=200, label='项目负责人', help_text='项目负责人',read_only=True)
 
     # （14）可以给字段添加error_messages参数，为字典类型，字典的key为校验的参数名，值为校验失败之后的错误提示
-    tester = serializers.CharField(max_length=200, label='测试人员', help_text='测试人员', write_only=True,
+    tester = serializers.CharField(max_length=200, label='测试人员', help_text='测试人员', allow_blank=True,read_only=True,
                                    error_messages={'required':'该字段必传','max_length':'长度不能超过200个字节'})
 
     def validate_name(self,value):
@@ -52,9 +52,9 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
         :param attrs:为前端输入的待校验的参数
         :return:
         """
-        if len(attrs['name'])!=8 or '测试' not in attrs['tester']:
-            # name的长度不等于8或者“测试”不在tester内，则抛出异常
-            raise serializers.ValidationError('项目名长度不为8或者测试人员名称中不包含“测试”')
+        # if len(attrs['name'])!=8 or '测试' not in attrs['tester']:
+        #     # name的长度不等于8或者“测试”不在tester内，则抛出异常
+        #     raise serializers.ValidationError('项目名长度不为8或者测试人员名称中不包含“测试”')
         return attrs
 
     def create(self, validated_data):
