@@ -59,10 +59,27 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
 
     def create(self, validated_data):
         """
-        创建数据
+        创建数据：必须将创建成功的模型类对象返回
         :param validated_data:为校验通过之后的数据
         :return:
         """
         obj=Projects.objects.create(**validated_data)
         return obj
 
+    def update(self, instance, validated_data):
+        """
+        数据的更新：放在序列化器类里面，必须将更新成功的模型类对象返回
+        :param instance:为待更新的模型类对象
+        :param validated_data:为校验通过之后的数据
+        :return:
+        """
+        # （3）步骤三：更新操作
+        # 用校验之后的数据validated_data去获取
+        instance.name = validated_data.get('name') or instance.name
+        instance.leader = validated_data.get('leader') or instance.leader
+        instance.tester = validated_data.get('tester') or instance.tester
+        instance.programmer = validated_data.get('programmer') or instance.programmer
+        instance.desc = validated_data.get('desc') or instance.desc
+        # 保存
+        instance.save()
+        return instance

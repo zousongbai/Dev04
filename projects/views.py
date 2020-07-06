@@ -161,8 +161,17 @@ class ProjectDetailView(View):
             }
             return JsonResponse(result, status=400)
 
-        # ①将转换之后的数据python_data，传给data，序列化器对象
-        serializer_obj1 = ProjectsSerializer(data=python_data)
+        # ①序列化器对象一：将转换之后的数据python_data，传给data，主要做校验
+        # serializer_obj1 = ProjectsSerializer(data=python_data)
+
+        # 如果在定义序列化器对象时，同时指定data和instance参数，有如下情况：
+        # ①调用序列化器对象.save()，会自动调用序列化器类中的update方法
+        serializer_obj1 = ProjectsSerializer(instance=obj,data=python_data)
+        # data：做数据校验的工作，即反列化
+        # instance：做的是序列化操作
+        # 同时给data和instance传参，往往做的是创建，意思是对obj对象进行修改，前端传的参数用data接收，更新的对象用instance去指定
+
+
         try:
             # raise_exception=True：当校验失败，会报异常
             # ②序列化器对象调用is_valid方法去做校验
@@ -177,21 +186,25 @@ class ProjectDetailView(View):
         # （3）步骤三：更新操作
         # 如果前端传空就更新，如果不为空则更新
         # ⑤用校验通过的数据（serializer_obj1.validated_data）去获取
-        obj.name = serializer_obj1.validated_data.get('name') or obj.name
-        obj.leader = serializer_obj1.validated_data.get('leader') or obj.leader
-        obj.tester = serializer_obj1.validated_data.get('tester') or obj.tester
-        obj.programmer = serializer_obj1.validated_data.get('programmer') or obj.programmer
-        obj.desc = serializer_obj1.validated_data.get('desc') or obj.desc
-        # 或
-        # Projects.objects.filter(id=pk).update(**python_data)
-
-        # 保存
-        obj.save()
+        # obj.name = serializer_obj1.validated_data.get('name') or obj.name
+        # obj.leader = serializer_obj1.validated_data.get('leader') or obj.leader
+        # obj.tester = serializer_obj1.validated_data.get('tester') or obj.tester
+        # obj.programmer = serializer_obj1.validated_data.get('programmer') or obj.programmer
+        # obj.desc = serializer_obj1.validated_data.get('desc') or obj.desc
+        # # 或
+        # # Projects.objects.filter(id=pk).update(**python_data)
+        #
+        # # 保存
+        # obj.save()
 
         # （4）步骤四：向前端返回json格式的数据
-        serializer_obj = ProjectsSerializer(instance=obj)  # 序列化输出时，使用这行代码
+        # 序列化器对象二：给instance传参，主要做的是，将模型类对象返回给前端
+        # serializer_obj = ProjectsSerializer(instance=obj)  # 序列化输出时，使用这行代码
 
-        return JsonResponse(serializer_obj.data, status=201)
+        # 调用序列化器对象中的save方法
+        serializer_obj1.save(user='花花')
+        # 使用序列化器对象.data返回
+        return JsonResponse(serializer_obj1.data, status=201)
 
     def delete(self, request, pk):
         """删除项目"""
