@@ -87,6 +87,10 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
 # 使用模型序列化器类：简化序列化器类中字段的创建
 # （1）需要继承ModelSerializer
 class ProjectsModelSerializer(serializers.ModelSerializer):
+    # 如果在模型序列化器类中显示指定了模型类中的某个字段，那么会将自动生成的字段覆盖掉
+    name=serializers.CharField(max_length=20,label='项目名称',help_text='项目名称',min_length=5,
+                               validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
+
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
         # （2）需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
@@ -94,6 +98,15 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         model=Projects
         # （3）fields类属性来指定，模型类中哪些字段需要输入或输出
         # 指定当前模型类的字段
-        fields='__all__' # 将模型类所有的字段都生成序列化器类中的字段
+        # ①将模型类所有的字段都生成序列化器类中的字段
+        # fields='__all__'
+
+        # ②可以将需要输入或者输出的字段，在元祖中指定
+        # fields=('id','name','leader','tester','programmer','create_time','update_time')
+
+        # ③把需要排除的字段放在exclude中，过滤不生成的字段
+        exclude=('desc',)
+
         # （4）默认id主键，会添加read_only=True
         # （5）create_time和update_time会自动添加read_only=True
+

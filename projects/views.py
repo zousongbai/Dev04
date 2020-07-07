@@ -5,12 +5,6 @@ from django.views import View
 from projects.models import Projects
 from .serializers import ProjectsSerializer,ProjectsModelSerializer
 
-ret = {
-    "msg": "",
-    "code": 0
-}
-
-
 
 class ProjectsView(View):
 
@@ -33,6 +27,11 @@ class ProjectsView(View):
         # （1）步骤一：获取新的项目信息，并转化为python中的数据类型（字典或者嵌套字典的列表）
         # 因为：需要将前端传递的数据进行校验，或做数据保存，更加方便的获取到前端传递的数据，所以有必要转化为python当中的数据类型
 
+        # ret不能放在全局，因为其他接口请求的时候，会状态的更新，所以不能放在全局
+        ret = {
+            "msg": "",
+            "code": 0
+        }
         # 请求数据
         request_data = request.body  # json格式数据往往存放在body里面
 
@@ -94,6 +93,13 @@ class ProjectDetailView(View):
 
     def put(self, request, pk):
         """更新项目"""
+
+        # ret不能放在全局，因为其他接口请求的时候，会状态的更新，所以不能放在全局
+        ret = {
+            "msg": "",
+            "code": 0
+        }
+
         # （1）步骤一：校验pk值否存在，并获取待更新的模型类对象
         try:
             obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
