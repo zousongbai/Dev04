@@ -70,18 +70,32 @@ class ProjectsView(View):
 
 
 class ProjectDetailView(View):
+    def get_object(self, pk):
+        """获取模型类对象"""
+        try:
+            obj = Projects.objects.get(id=pk)
+        except Exception as e:
+            result = {
+                "msg": "参数有误",
+                "code": 0
+            }
+            return JsonResponse(result, status=400)
+        return obj
 
     def get(self, request, pk):
         """获取项目详情"""
         # （1）步骤一：校验参数，校验参数pk是否存在
-        try:
-            obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
-        except Exception as e:
-            result = {
-                'msg': '参数有误',
-                'code': 0
-            }
-            return JsonResponse(result, status=400)
+        # try:
+        #     obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
+        # except Exception as e:
+        #     result = {
+        #         'msg': '参数有误',
+        #         'code': 0
+        #     }
+        #     return JsonResponse(result, status=400)
+
+        # 获取模型类对象
+        obj=self.get_object()
 
         # （2）步骤二：从数据库中获取模型类对象数据
         # ①进行序列化输出，需要创建序列化器类对象
@@ -101,14 +115,17 @@ class ProjectDetailView(View):
         }
 
         # （1）步骤一：校验pk值否存在，并获取待更新的模型类对象
-        try:
-            obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
-        except Exception as e:
-            result = {
-                'msg': '参数有误',
-                'code': 0
-            }
-            return JsonResponse(result, status=400)
+        # try:
+        #     obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
+        # except Exception as e:
+        #     result = {
+        #         'msg': '参数有误',
+        #         'code': 0
+        #     }
+        #     return JsonResponse(result, status=400)
+
+        # 获取模型类对象
+        obj = self.get_object()
 
         # （2）步骤二：获取新的项目信息并校验
         request_data = request.body  # json格式数据往往存放在body里面
@@ -152,14 +169,17 @@ class ProjectDetailView(View):
     def delete(self, request, pk):
         """删除项目"""
         # （1）步骤一：校验pk值否存在，并获取待删除的模型类对象
-        try:
-            obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
-        except Exception as e:
-            result = {
-                'msg': '参数有误',
-                'code': 0
-            }
-            return JsonResponse(result, status=400)
+        # try:
+        #     obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
+        # except Exception as e:
+        #     result = {
+        #         'msg': '参数有误',
+        #         'code': 0
+        #     }
+        #     return JsonResponse(result, status=400)
+
+        # 获取模型类对象
+        obj = self.get_object()
 
         # 删除
         obj.delete()

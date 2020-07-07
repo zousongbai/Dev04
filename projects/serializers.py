@@ -88,8 +88,8 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
 # （1）需要继承ModelSerializer
 class ProjectsModelSerializer(serializers.ModelSerializer):
     # 如果在模型序列化器类中显示指定了模型类中的某个字段，那么会将自动生成的字段覆盖掉
-    name=serializers.CharField(max_length=20,label='项目名称',help_text='项目名称',min_length=5,
-                               validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
+    # name=serializers.CharField(max_length=20,label='项目名称',help_text='项目名称',min_length=5,
+    #                            validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
 
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
@@ -104,9 +104,25 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         # ②可以将需要输入或者输出的字段，在元祖中指定
         # fields=('id','name','leader','tester','programmer','create_time','update_time')
 
-        # ③把需要排除的字段放在exclude中，过滤不生成的字段
+        # ③把需要排除的字段放在exclude中，过滤不生成的字段，不参与输入也不参与输出
         exclude=('desc',)
 
-        # （4）默认id主键，会添加read_only=True
-        # （5）create_time和update_time会自动添加read_only=True
+        # 可以在read_only_fields中指定需要进行read_only=True的字段，统一指定要只输出不输入的字段，
+        read_only_fields = ('id', 'desc', 'programmer')
 
+        # 可以在extra_kwargs属性中，来定制某些字段，有的会覆盖，没有的会新增
+        # 对字段添加额外的限制
+        # 把需要修改的字段名作为key,value值为字典里面是修改的内容
+        extra_kwargs = {
+            'programmer': {
+                'label': '研发人员',
+                'write_only': False,
+                'max_length': 10,  # 设置最大长度
+                'min_length': 4,
+            },
+            'name': {
+                'max_length': 10,
+                'min_length': '2',
+                'validators': [is_name_contain_x]
+            }
+        }
