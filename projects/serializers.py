@@ -10,6 +10,8 @@ from rest_framework import validators
 # 导入模型类
 from .models import Projects
 
+from interfaces.serializers import InterfacesModelSerializer
+
 def is_name_contain_x(value):
     """
     校验name字段是否包含x
@@ -95,7 +97,17 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     # 在模型序列化器类中添加模型类中没有的字段
     email=serializers.EmailField(write_only=True) # 只输入不输出
 
+    # 通过父表（Projects）获取子表（Interfaces）的信息
+    # ①默认可以使用子表模型类名首字母小写_set，即默认名称：interfaces_set
+    # interfaces_set=InterfacesModelSerializer(label='所拥有的接口',many=True)
+    # 备注：因为interfaces_set是多个，所以要设置many=True
 
+    # ②子表模型类名首字母小写_set，代表可以获取子表的信息
+    # 如果某个字段返回的结果有多条，那么需要添加many=True参数
+    # interfaces_set=serializers.StringRelatedField(many=True)
+
+    # ③子表的模型类使用了related_name='interfaces'，父表序列化类的时候就不能使用interfaces_set
+    interfaces=serializers.StringRelatedField(many=True)
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
         # （2）需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
@@ -106,8 +118,10 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         # ①将模型类所有的字段都生成序列化器类中的字段
         # fields='__all__'
 
-        # ②可以将需要输入或者输出的字段，在元祖中指定
-        fields=('id','name','leader','tester','programmer','create_time','update_time','email')
+        # ②定义的所有序列化器字段，必须得添加到fields元祖中，模型类中未定义的字段也需要添加
+        # fields=('id','name','leader','tester','programmer','create_time','update_time','email','interfaces_set')
+
+        fields = ( 'id', 'name', 'leader', 'tester', 'programmer', 'create_time', 'update_time', 'email', 'interfaces')
 
         # ③把需要排除的字段放在exclude中，过滤不生成的字段，不参与输入也不参与输出
         # exclude=('desc',)

@@ -14,7 +14,7 @@ class Interfaces(models.Model):
     # 2）models.SET_NULL,null=True：父表记录删除，子表自动设置为null
     # models.ForeignKey('projects.Projects',on_delete=models.SET_NULL,null=True)
 
-    projects=models.ForeignKey('projects.Projects', on_delete=models.CASCADE,verbose_name='所属项目',help_text='所属项目')
+    projects=models.ForeignKey('projects.Projects', on_delete=models.CASCADE,verbose_name='所属项目',help_text='所属项目',related_name='interfaces')
     # 备注：
     # ①第一个参数：'projects.Projects'：应用名.父表模型类名
     # ②变量名为父表的模型类小写

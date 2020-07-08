@@ -10,7 +10,7 @@ from rest_framework import validators
 # 导入模型类
 from .models import Interfaces
 from projects.models import Projects
-from projects.serializers import ProjectsModelSerializer
+# from projects.serializers import ProjectsModelSerializer
 
 
 # 使用模型序列化器类：简化序列化器类中字段的创建
@@ -23,7 +23,7 @@ class InterfacesModelSerializer(serializers.ModelSerializer):
     # 备注：项目关联的ID一定要在Projects查询集里面
 
     # ②会将父表对应对象的__str__方法结果返回
-    # projects=serializers.StringRelatedField()
+    projects=serializers.StringRelatedField()
     # StringRelatedField的作用：在序列化输出的时候，它不会返回项目ID（即主键id），而是返回父表对应对象的打印值
 
     # ③会将父表对应对象的某个字段的值返回
@@ -31,7 +31,7 @@ class InterfacesModelSerializer(serializers.ModelSerializer):
     # projects=serializers.SlugRelatedField(slug_field='leader',read_only=True)
 
     # 可以将某个序列化器对象定义为字段，支持Field中的所有参数
-    projects=ProjectsModelSerializer(label='所属项目信息',help_text='所属项目信息',read_only=True)
+    # projects=ProjectsModelSerializer(label='所属项目信息',help_text='所属项目信息',read_only=True)
 
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定

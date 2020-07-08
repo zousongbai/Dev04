@@ -7,6 +7,8 @@ from interfaces.models import Interfaces
 from .serializers import ProjectsSerializer,ProjectsModelSerializer
 from interfaces.serializers import InterfacesModelSerializer
 
+
+
 class ProjectsView(View):
 
     def get(self, request):  # request:需要request接收，接收http的request对象
