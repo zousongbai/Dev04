@@ -11,9 +11,9 @@ class ProjectsView(View):
 
     def get(self, request):  # request:需要request接收，接收http的request对象
         """获取项目的所有信息"""
-        obj=InterfacesModelSerializer(instance=Interfaces.objects.all(),many=True)
-        # instance=Interfaces.objects.all()：查询集
-        return JsonResponse(obj.data,safe=False)
+        # obj=InterfacesModelSerializer(instance=Interfaces.objects.all(),many=True)
+        # # instance=Interfaces.objects.all()：查询集
+        # return JsonResponse(obj.data,safe=False)
 
         # （1）步骤一：从数据库中获取所有的项目信息（返回的是查询集）
         projects_object = Projects.objects.all()

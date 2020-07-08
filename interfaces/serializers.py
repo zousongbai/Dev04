@@ -10,6 +10,8 @@ from rest_framework import validators
 # 导入模型类
 from .models import Interfaces
 from projects.models import Projects
+from projects.serializers import ProjectsModelSerializer
+
 
 # 使用模型序列化器类：简化序列化器类中字段的创建
 # （1）需要继承ModelSerializer
@@ -26,7 +28,10 @@ class InterfacesModelSerializer(serializers.ModelSerializer):
 
     # ③会将父表对应对象的某个字段的值返回
     # slug_field：指定序列化输出的时候，显示哪一个字段
-    projects=serializers.SlugRelatedField(slug_field='leader',read_only=True)
+    # projects=serializers.SlugRelatedField(slug_field='leader',read_only=True)
+
+    # 可以将某个序列化器对象定义为字段，支持Field中的所有参数
+    projects=ProjectsModelSerializer(label='所属项目信息',help_text='所属项目信息',read_only=True)
 
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
