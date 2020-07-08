@@ -91,6 +91,11 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     # name=serializers.CharField(max_length=20,label='项目名称',help_text='项目名称',min_length=5,
     #                            validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
 
+
+    # 在模型序列化器类中添加模型类中没有的字段
+    email=serializers.EmailField(write_only=True) # 只输入不输出
+
+
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
         # （2）需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
@@ -102,10 +107,10 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         # fields='__all__'
 
         # ②可以将需要输入或者输出的字段，在元祖中指定
-        # fields=('id','name','leader','tester','programmer','create_time','update_time')
+        fields=('id','name','leader','tester','programmer','create_time','update_time','email')
 
         # ③把需要排除的字段放在exclude中，过滤不生成的字段，不参与输入也不参与输出
-        exclude=('desc',)
+        # exclude=('desc',)
 
         # 可以在read_only_fields中指定需要进行read_only=True的字段，统一指定要只输出不输入的字段，
         read_only_fields = ('id', 'desc', 'programmer')
@@ -120,9 +125,19 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
                 'max_length': 10,  # 设置最大长度
                 'min_length': 4,
             },
-            'name': {
-                'max_length': 10,
-                'min_length': '2',
-                'validators': [is_name_contain_x]
-            }
+            # 'name': {
+            #     'max_length': 10,
+            #     'min_length': '2',
+            #     'validators': [is_name_contain_x]
+            # }
         }
+
+    # email在保存数据的时候，会调用父类的create方法，
+    # 父类的create方法，validated_data中包含了所有校验通过的数据，没有包含email
+    # 所以直接传入email会提示报错信息
+    def create(self, validated_data):
+        # （1）步骤一：先pop调email
+        email=validated_data.pop('email')
+        # （2）步骤二：再调用父类的create
+        # return super().create(**validated_data)
+        return Projects.objects.create(**validated_data)
