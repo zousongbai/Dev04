@@ -1,6 +1,6 @@
 import json
 
-from django.http import JsonResponse
+from django.http import JsonResponse,Http404
 from django.views import View
 from projects.models import Projects
 from interfaces.models import Interfaces
@@ -80,14 +80,25 @@ class ProjectDetailView(View):
     def get_object(self, pk):
         """获取模型类对象"""
         try:
+            # 获取模型类对象
             obj = Projects.objects.get(id=pk)
         except Exception as e:
             result = {
                 "msg": "参数有误",
                 "code": 0
             }
-            return JsonResponse(result, status=400)
+            # return JsonResponse(result, status=400)
+            # 抛出异常
+            raise Http404
         return obj
+
+
+    """
+    （1）场景：获取模型类对象直接返回，可能主键id传的pk传，在数据库没有，
+    （2）原因：就会到异常捕获的代码当中，那么就会返回JsonResponse，返回的JsonResponse就会给请求方法的obj,
+    此时就没有任何意义
+    （3）解决方法：在except中就直接中断整个程序的执行，直接抛出异常
+    """
 
     def get(self, request, pk):
         """获取项目详情"""
@@ -102,7 +113,7 @@ class ProjectDetailView(View):
         #     return JsonResponse(result, status=400)
 
         # 获取模型类对象
-        obj=self.get_object()
+        obj=self.get_object(pk)
 
         # （2）步骤二：从数据库中获取模型类对象数据
         # ①进行序列化输出，需要创建序列化器类对象
@@ -132,7 +143,7 @@ class ProjectDetailView(View):
         #     return JsonResponse(result, status=400)
 
         # 获取模型类对象
-        obj = self.get_object()
+        obj = self.get_object(pk)
 
         # （2）步骤二：获取新的项目信息并校验
         request_data = request.body  # json格式数据往往存放在body里面
@@ -186,7 +197,7 @@ class ProjectDetailView(View):
         #     return JsonResponse(result, status=400)
 
         # 获取模型类对象
-        obj = self.get_object()
+        obj = self.get_object(pk)
 
         # 删除
         obj.delete()
