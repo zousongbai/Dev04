@@ -162,7 +162,7 @@ class ProjectDetailView(View):
         # 如果在定义序列化器对象时，同时指定data和instance参数，有如下情况：
         # ①调用序列化器对象.save()，会自动调用序列化器类中的update方法
         serializer_obj1 = ProjectsModelSerializer(instance=obj,data=python_data)
-        # data：做数据校验的工作，即反列化
+        # data：做数据校验的工作，即反列化。涉及到数据校验，就需要给data传参
         # instance：做的是序列化操作
         # 同时给data和instance传参，往往做的是创建，意思是对obj对象进行修改，前端传的参数用data接收，更新的对象用instance去指定
 
