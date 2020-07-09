@@ -152,6 +152,10 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # （1）步骤一：先pop调email
         email=validated_data.pop('email')
+        # 备注：为什么要把模型类没有的字段删除？
+        # 因为，如注册的功能，用户需要输入密码和确认密码，真正在保存的时候，不需要保存确认密码，但确认密码前端又必须要校验
+        # 所以，基于这种场景就有必要重写create实现
         # （2）步骤二：再调用父类的create
-        # return super().create(**validated_data)
-        return Projects.objects.create(**validated_data)
+        return super().create(validated_data)
+        # return Projects.objects.create(**validated_data)
+
