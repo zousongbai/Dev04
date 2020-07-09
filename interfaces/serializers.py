@@ -21,6 +21,7 @@ class InterfacesModelSerializer(serializers.ModelSerializer):
     # 外键关联字段：PrimaryKeyRelatedField，外键名称为模型类中的字段
     # projects = serializers.PrimaryKeyRelatedField(help_text='所属项目', label='所属项目', queryset=Projects.objects.all())
     # 备注：项目关联的ID一定要在Projects查询集里面
+    # 子表当中的模型序列化器类继承ModelSerializer之后，会自动创建：PrimaryKeyRelatedField字段
 
     # ②会将父表对应对象的__str__方法结果返回
     projects=serializers.StringRelatedField()

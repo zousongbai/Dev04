@@ -93,6 +93,13 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     # name=serializers.CharField(max_length=20,label='项目名称',help_text='项目名称',min_length=5,
     #                            validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
 
+    # # 导入locale
+    # import locale  # locale：专门处理编码
+    # # 将本地的语言设置为chinese
+    # locale.setlocale(locale.LC_CTYPE,'chinese')
+    # # 格式化字符串
+    # datetime_fmt='%Y年%m月%d日 %H:%M:%S'
+
 
     # 在模型序列化器类中添加模型类中没有的字段
     email=serializers.EmailField(write_only=True) # 只输入不输出
@@ -108,6 +115,22 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
 
     # ③子表的模型类使用了related_name='interfaces'，父表序列化类的时候就不能使用interfaces_set
     interfaces=serializers.StringRelatedField(many=True)
+
+    # 主表projects继承了ModelSerializer，不会生成子表的字段。
+    # 如果要生成，则需要显示的指定，但名称有要求，子表名小写_set
+    # interfaces_set = serializers.PrimaryKeyRelatedField(many=True)
+
+    # 时间格式化输出
+    # （1）方法一：返回之前进行修改
+    # ①英文格式：2020-03-20
+    # update_time=serializers.DateTimeField(label='更新时间',help_text='更新时间',
+    #                                       format='%Y-%m-%d %H:%M:%S',required=False)
+
+    import utils # 自定义工具
+    # ②中文格式：2020年3月20日　
+    update_time = serializers.DateTimeField(label='更新时间', help_text='更新时间',
+                                            format=utils.datetime_fmt, required=False)
+
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
         # （2）需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
