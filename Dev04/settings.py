@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = '@(35-t#w!nxzp3nuky6$8xl2fch*i!-sgk_omj4n(bpszg_7r@'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,7 +39,7 @@ INSTALLED_APPS = [
     # 注册子应用
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
     'projects.apps.ProjectsConfig',
-    'interfaces', # 注册子应用，可以直接使用子应用名
+    'interfaces',  # 注册子应用，可以直接使用子应用名
 ]
 
 MIDDLEWARE = [
@@ -75,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Dev04.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -88,16 +85,15 @@ DATABASES = {
         # 指定数据库的名称
         'NAME': 'dev04',
         # 指定连接的数据库主机地址：域名和IP都可以
-        'HOST':'localhost',
+        'HOST': 'localhost',
         # 指定数据库的连接端口号：默认3306
-        'PORT':3306,
+        'PORT': 3306,
         #  指定用户名
-        'USER':'root',
+        'USER': 'root',
         #   数据库密码
-        'PASSWORD':'123456'
+        'PASSWORD': '123456'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -117,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -133,13 +128,18 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
 
 
-REST_FRAMEWORK={
-'NON_FIELD_ERRORS_KEY': 'errors',
+# 在全局配置文件setting.py文件中的REST_FRAMEWORK字典里修改DRF框架的配置
+REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEY': 'errors',
+    # (1)可以修改默认的渲染类（处理符合的数据形式）
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer', # 默认返回json
+        'rest_framework.renderers.BrowsableAPIRenderer', # 返回HTML页面
+    ],
 }

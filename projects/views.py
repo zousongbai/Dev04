@@ -7,15 +7,19 @@ from interfaces.models import Interfaces
 from .serializers import ProjectsSerializer,ProjectsModelSerializer
 from interfaces.serializers import InterfacesModelSerializer
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from rest_framework import status # 自定义状态码需导入status
 
 
-class ProjectsView(View):
+# （1）步骤一：需要继承APIView
+# ①对Django中的View进行了扩展
+# ②具备认证、授权、限流、不同请求数据的解析
+class ProjectsView(APIView):
 
     def get(self, request):  # request:需要request接收，接收http的request对象
         """获取项目的所有信息"""
-        # obj=InterfacesModelSerializer(instance=Interfaces.objects.all(),many=True)
-        # # instance=Interfaces.objects.all()：查询集
-        # return JsonResponse(obj.data,safe=False)
 
         # （1）步骤一：从数据库中获取所有的项目信息（返回的是查询集）
         projects_object = Projects.objects.all()
@@ -26,8 +30,18 @@ class ProjectsView(View):
         serializer_obj = ProjectsModelSerializer(instance=projects_object, many=True)
 
         # （3）步骤三：向前端返回json格式的数据
-        return JsonResponse(serializer_obj.data, safe=False, status=200)
+        # return JsonResponse(serializer_obj.data, safe=False, status=200)
         # 备注：列表必须加safe，字典可以不加safe
+
+        # （2）步骤二：需要使用DRF中的Response去返回
+        # ①对Django中的HttpResponse进行扩展
+        # ②实现了根据请求头中Accept参数来动态返回
+        # ③默认情况下，如果不传Accept参数或者传application / json，那么会返回json格式的数据
+        # ④如果Accept参数为text / html，那么会返回可浏览的api页面（HTML页面）
+        # ⑤Response第一个参数为：经过序列化之后的数据（往往需要使用序列化器对象.data）
+        # ⑥status为指定响应状态码，不传默认200
+        return Response(serializer_obj.data,status=status.HTTP_200_OK)
+        #  自定义状态码：status.HTTP_200_OK
 
     def post(self, request):
         """创建项目"""
@@ -51,7 +65,8 @@ class ProjectsView(View):
                 'msg': '参数有误',
                 'code': 0
             }
-            return JsonResponse(result, status=400)
+            # return JsonResponse(result, status=400)
+            return Response(result,status=status.HTTP_400_BAD_REQUEST)
 
         # （2）步骤二：校验传递的数据是否正确（非常复杂）
 
@@ -64,7 +79,8 @@ class ProjectsView(View):
         except Exception as e:
             ret['msg'] = '参数有误'
             ret.update(serializer_obj1.errors)
-            return JsonResponse(ret, status=400)
+            # return JsonResponse(ret, status=400)
+            return Response(ret, status=status.HTTP_400_BAD_REQUEST)
 
         # 在序列化器对象调用save方法时，传递的关键字参数，会自动添加到序列化器类中的create方法，validated_data字典中
         # serializer_obj1.save(user='小狼')
@@ -73,10 +89,10 @@ class ProjectsView(View):
         # （4）步骤四：向前端返回json格式的数据
         ret['msg'] = '成功'
         ret.update(serializer_obj1.data)
-        return JsonResponse(ret, status=201)
+        # return JsonResponse(ret, status=201)
+        return Response(ret,status=status.HTTP_201_CREATED)
 
-
-class ProjectDetailView(View):
+class ProjectDetailView(APIView):
     def get_object(self, pk):
         """获取模型类对象"""
         try:
@@ -102,15 +118,6 @@ class ProjectDetailView(View):
 
     def get(self, request, pk):
         """获取项目详情"""
-        # （1）步骤一：校验参数，校验参数pk是否存在
-        # try:
-        #     obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
-        # except Exception as e:
-        #     result = {
-        #         'msg': '参数有误',
-        #         'code': 0
-        #     }
-        #     return JsonResponse(result, status=400)
 
         # 获取模型类对象
         obj=self.get_object(pk)
@@ -121,7 +128,8 @@ class ProjectDetailView(View):
         # ②获取数据：使用序列化器对象的data属性：serializer_obj.data
 
         # （3）步骤三：向前端返回json格式的数据
-        return JsonResponse(serializer_obj.data)
+        # return JsonResponse(serializer_obj.data)
+        return Response(serializer_obj.data,status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         """更新项目"""
@@ -131,16 +139,6 @@ class ProjectDetailView(View):
             "msg": "",
             "code": 0
         }
-
-        # （1）步骤一：校验pk值否存在，并获取待更新的模型类对象
-        # try:
-        #     obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
-        # except Exception as e:
-        #     result = {
-        #         'msg': '参数有误',
-        #         'code': 0
-        #     }
-        #     return JsonResponse(result, status=400)
 
         # 获取模型类对象
         obj = self.get_object(pk)
@@ -157,7 +155,8 @@ class ProjectDetailView(View):
                 'msg': '参数有误',
                 'code': 0
             }
-            return JsonResponse(result, status=400)
+            # return JsonResponse(result, status=400)
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
         # 如果在定义序列化器对象时，同时指定data和instance参数，有如下情况：
         # ①调用序列化器对象.save()，会自动调用序列化器类中的update方法
@@ -175,27 +174,19 @@ class ProjectDetailView(View):
             # ③校验之后，如果有异常，就处理异常后，再返回
             ret['msg'] = '参数有误'
             ret.update(serializer_obj1.errors)
-            return JsonResponse(ret, status=400)
+            # return JsonResponse(ret, status=400)
+            return Response(ret,status=status.HTTP_400_BAD_REQUEST)
 
         # 调用序列化器对象中的save方法
         # serializer_obj1.save(user='花花')
         serializer_obj1.save()
 
         # 使用序列化器对象.data返回
-        return JsonResponse(serializer_obj1.data, status=201)
+        # return JsonResponse(serializer_obj1.data, status=201)
+        return Response(serializer_obj1.data,status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):
         """删除项目"""
-        # （1）步骤一：校验pk值否存在，并获取待删除的模型类对象
-        # try:
-        #     obj = Projects.objects.get(id=pk)  # get：结果没有或返回多条结果都会报错
-        # except Exception as e:
-        #     result = {
-        #         'msg': '参数有误',
-        #         'code': 0
-        #     }
-        #     return JsonResponse(result, status=400)
-
         # 获取模型类对象
         obj = self.get_object(pk)
 
@@ -207,5 +198,5 @@ class ProjectDetailView(View):
             'msg': '删除成功',
             'code': 1
         }
-        return JsonResponse(python_data, status=200)
-
+        # return JsonResponse(python_data, status=200)
+        return Response(python_data,status=status.HTTP_204_NO_CONTENT)
