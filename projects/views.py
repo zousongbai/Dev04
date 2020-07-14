@@ -45,8 +45,14 @@ class ProjectsView(APIView):
 
     def post(self, request):
         """创建项目"""
-        # （1）步骤一：获取新的项目信息，并转化为python中的数据类型（字典或者嵌套字典的列表）
-        # 因为：需要将前端传递的数据进行校验，或做数据保存，更加方便的获取到前端传递的数据，所以有必要转化为python当中的数据类型
+        # 继承APIView之后，request为Request
+        # ①对Django中的HttpRequest进行了扩展
+        # ②统一使用Request对象.data属性去获取json格式的参数，form表单参数、FILES
+        # ③Django支持的参数获取方式，DRF都支持
+        # ④.GET-->查询字符串参数-->.query_params
+        # ⑤.POST-->x-www-form-urlencoded
+        # ⑥.body-->获取请求体参数
+        # ⑦Request对象.data属性为将请求数据转化为python中的字典（嵌套字典的列表）
 
         # ret不能放在全局，因为其他接口请求的时候，会状态的更新，所以不能放在全局
         ret = {
@@ -54,25 +60,27 @@ class ProjectsView(APIView):
             "code": 0
         }
         # 请求数据
-        request_data = request.body  # json格式数据往往存放在body里面
+        # request_data = request.body  # json格式数据往往存放在body里面
+        #
+        # try:
+        #     # 请求体的数据，转化成python中的数据类型（字典或者嵌套字典的列表）
+        #     python_data = json.loads(request_data)
+        # except Exception as e:
+        #     # 不是json则报错，并返回结果
+        #     result = {
+        #         'msg': '参数有误',
+        #         'code': 0
+        #     }
+        #     # return JsonResponse(result, status=400)
+        #     return Response(result,status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            # 请求体的数据，转化成python中的数据类型（字典或者嵌套字典的列表）
-            python_data = json.loads(request_data)
-        except Exception as e:
-            # 不是json则报错，并返回结果
-            result = {
-                'msg': '参数有误',
-                'code': 0
-            }
-            # return JsonResponse(result, status=400)
-            return Response(result,status=status.HTTP_400_BAD_REQUEST)
+
 
         # （2）步骤二：校验传递的数据是否正确（非常复杂）
 
         # 在定义序列化器对象时，只给data传参
         # ①使用序列化器对象.save()方法，会自动调用序列化器类中的create()方法
-        serializer_obj1 = ProjectsModelSerializer(data=python_data)
+        serializer_obj1 = ProjectsModelSerializer(data=request.data) # 根据请求头的Content-Type，就会自动的解析
         try:
             # raise_exception=True：当校验失败，会报异常
             serializer_obj1.is_valid(raise_exception=True)
@@ -108,14 +116,6 @@ class ProjectDetailView(APIView):
             raise Http404
         return obj
 
-
-    """
-    （1）场景：获取模型类对象直接返回，可能主键id传的pk传，在数据库没有，
-    （2）原因：就会到异常捕获的代码当中，那么就会返回JsonResponse，返回的JsonResponse就会给请求方法的obj,
-    此时就没有任何意义
-    （3）解决方法：在except中就直接中断整个程序的执行，直接抛出异常
-    """
-
     def get(self, request, pk):
         """获取项目详情"""
 
@@ -143,24 +143,10 @@ class ProjectDetailView(APIView):
         # 获取模型类对象
         obj = self.get_object(pk)
 
-        # （2）步骤二：获取新的项目信息并校验
-        request_data = request.body  # json格式数据往往存放在body里面
-
-        try:
-            # 请求体的数据，转化成python中的数据类型（字典或者嵌套字典的列表）
-            python_data = json.loads(request_data)
-        except Exception as e:
-            # 不是json则报错，并返回结果
-            result = {
-                'msg': '参数有误',
-                'code': 0
-            }
-            # return JsonResponse(result, status=400)
-            return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
         # 如果在定义序列化器对象时，同时指定data和instance参数，有如下情况：
         # ①调用序列化器对象.save()，会自动调用序列化器类中的update方法
-        serializer_obj1 = ProjectsModelSerializer(instance=obj,data=python_data)
+        serializer_obj1 = ProjectsModelSerializer(instance=obj,data=request.data)
         # data：做数据校验的工作，即反列化。涉及到数据校验，就需要给data传参
         # instance：做的是序列化操作
         # 同时给data和instance传参，往往做的是创建，意思是对obj对象进行修改，前端传的参数用data接收，更新的对象用instance去指定

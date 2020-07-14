@@ -32,23 +32,10 @@ from django.db import models
 
 # （1）步骤一：数据模型类，需要继承Model父类或者Model子类，不继承就不是数据模型类，就是普通的类
 class Projects(models.Model):
-    # （2）步骤二：
-    # ①模型类名：为子应用名首字母大写，即Projects
-    # ②需要继承models当中的Model
-
-    # （3）步骤三：以类属性的形式添加数据表的字段
-    # 7、只要某一个字段中primary_key=True，那么django就不会自动创建id字段，会使用自定义的
     id=models.AutoField(primary_key=True)
 
     # ①项目名称
     name=models.CharField(max_length=200,verbose_name='项目名称',help_text='项目名称',unique=True)
-    # 备注：
-    # 1）CharField：models中CharField字段对应的MySQL中的varchar
-    # ①CharField：至少要指定一个max_length必传参数，代表此字段的最大长度，不能为负数
-    # 2）并设置字符串的最大长度
-    # 3）verbose_name：添加中文中文提示，为个性化信息
-    # 4）help_text帮助文本信息，在api接口文档平台和admin后端站点中会用于提示，往往跟verbose_name一致
-    # 5）unique:用于指定唯一键，默认为False
 
     # ②项目经理的信息
     leader=models.CharField(max_length=50,verbose_name='项目负责人',help_text='项目负责人')
@@ -61,15 +48,6 @@ class Projects(models.Model):
 
     # ⑤没有使用长度限制
     desc=models.TextField(verbose_name='项目简介',help_text='项目简介',null=True,blank=True,default='xxx简介')
-    # TextField：长文本，没有长度限制
-    # null：指定数据在保存时是否可以为空，默认不能为空，如果null=True，那么可以为空值
-    # blank：指定前端用户在创建数据时，是否需要传递，默认需要传递，如果不传递，需要将blank设置为True
-    # default：如果前端不传，则使用默认的去保存
-    # 1）如果前端不传，则使用默认的去保存default，删除null=True
-    # desc = models.TextField(verbose_name='项目简介', help_text='项目简介', blank=True, default='xxx简介')
-    # 2）如果默认值不需要，需要删除default，加上null=True
-    # desc = models.TextField(verbose_name='项目简介', help_text='项目简介', blank=True, null=True)
-
 
     # ⑥DateTimeField可以添加auto_now_add选项，Django会自动添加创建记录时的时间
     create_time=models.DateTimeField(auto_now_add=True,verbose_name='创建时间',help_text='创建时间')
@@ -82,9 +60,6 @@ class Projects(models.Model):
 
     class Meta: # 类名固定
 
-        # ⑧可以在模型类下定义Meta子类，Meta子类名称固定
-        # 命名规则：tb开头下划线子应用名或模型类，即tb_子应用名/或模型类
-        # ⑨可以使用db_table类属性，来指定表名
         db_table='tb_projects'
 
         # ⑩指定表的个性化描述

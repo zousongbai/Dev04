@@ -89,20 +89,9 @@ class ProjectsSerializer(serializers.Serializer): # 类名：建议使用：模�
 # 使用模型序列化器类：简化序列化器类中字段的创建
 # （1）需要继承ModelSerializer
 class ProjectsModelSerializer(serializers.ModelSerializer):
-    # 如果在模型序列化器类中显示指定了模型类中的某个字段，那么会将自动生成的字段覆盖掉
-    # name=serializers.CharField(max_length=20,label='项目名称',help_text='项目名称',min_length=5,
-    #                            validators=[validators.UniqueValidator(queryset=Projects.objects.all(),message='项目名称已存在')])
-
-    # # 导入locale
-    # import locale  # locale：专门处理编码
-    # # 将本地的语言设置为chinese
-    # locale.setlocale(locale.LC_CTYPE,'chinese')
-    # # 格式化字符串
-    # datetime_fmt='%Y年%m月%d日 %H:%M:%S'
-
 
     # 在模型序列化器类中添加模型类中没有的字段
-    email=serializers.EmailField(write_only=True) # 只输入不输出
+    # email=serializers.EmailField(write_only=True) # 只输入不输出
 
     # 通过父表（Projects）获取子表（Interfaces）的信息
     # ①默认可以使用子表模型类名首字母小写_set，即默认名称：interfaces_set
@@ -114,7 +103,7 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     # interfaces_set=serializers.StringRelatedField(many=True)
 
     # ③子表的模型类使用了related_name='interfaces'，父表序列化类的时候就不能使用interfaces_set
-    interfaces=serializers.StringRelatedField(many=True)
+    # interfaces=serializers.StringRelatedField(many=True)
 
     # 主表projects继承了ModelSerializer，不会生成子表的字段。
     # 如果要生成，则需要显示的指定，但名称有要求，子表名小写_set
@@ -137,14 +126,7 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         # 指定要生成的模型
         model=Projects
         # （3）fields类属性来指定，模型类中哪些字段需要输入或输出
-        # 指定当前模型类的字段
-        # ①将模型类所有的字段都生成序列化器类中的字段
-        # fields='__all__'
-
-        # ②定义的所有序列化器字段，必须得添加到fields元祖中，模型类中未定义的字段也需要添加
-        # fields=('id','name','leader','tester','programmer','create_time','update_time','email','interfaces_set')
-
-        fields = ( 'id', 'name', 'leader', 'tester', 'programmer', 'create_time', 'update_time', 'email', 'interfaces')
+        fields = ( 'id', 'name', 'leader', 'tester', 'programmer', 'create_time', 'update_time',  'interfaces')
 
         # ③把需要排除的字段放在exclude中，过滤不生成的字段，不参与输入也不参与输出
         # exclude=('desc',)
@@ -155,30 +137,30 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         # 可以在extra_kwargs属性中，来定制某些字段，有的会覆盖，没有的会新增
         # 对字段添加额外的限制
         # 把需要修改的字段名作为key,value值为字典里面是修改的内容
-        extra_kwargs = {
-            'programmer': {
-                'label': '研发人员',
-                'write_only': False,
-                'max_length': 10,  # 设置最大长度
-                'min_length': 4,
-            },
-            # 'name': {
-            #     'max_length': 10,
-            #     'min_length': '2',
-            #     'validators': [is_name_contain_x]
-            # }
-        }
+        # extra_kwargs = {
+        #     'programmer': {
+        #         'label': '研发人员',
+        #         'write_only': False,
+        #         # 'max_length': 10,  # 设置最大长度
+        #         # 'min_length': 4
+        #     },
+        #     # 'name': {
+        #     #     'max_length': 10,
+        #     #     'min_length': '2',
+        #     #     'validators': [is_name_contain_x]
+        #     # }
+        # }
 
     # email在保存数据的时候，会调用父类的create方法，
     # 父类的create方法，validated_data中包含了所有校验通过的数据，没有包含email
     # 所以直接传入email会提示报错信息
-    def create(self, validated_data):
-        # （1）步骤一：先pop调email
-        email=validated_data.pop('email')
-        # 备注：为什么要把模型类没有的字段删除？
-        # 因为，如注册的功能，用户需要输入密码和确认密码，真正在保存的时候，不需要保存确认密码，但确认密码前端又必须要校验
-        # 所以，基于这种场景就有必要重写create实现
-        # （2）步骤二：再调用父类的create
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     # （1）步骤一：先pop调email
+    #     # email=validated_data.pop('email')
+    #     # 备注：为什么要把模型类没有的字段删除？
+    #     # 因为，如注册的功能，用户需要输入密码和确认密码，真正在保存的时候，不需要保存确认密码，但确认密码前端又必须要校验
+    #     # 所以，基于这种场景就有必要重写create实现
+    #     # （2）步骤二：再调用父类的create
+    #     return super().create(validated_data)
         # return Projects.objects.create(**validated_data)
 
