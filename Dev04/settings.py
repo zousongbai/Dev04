@@ -136,15 +136,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 # 在全局配置文件setting.py文件中的REST_FRAMEWORK字典里修改DRF框架的配置
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'errors',
     # (1)可以修改默认的渲染类（处理符合的数据形式）
     'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer', # 默认返回json
-        'rest_framework.renderers.BrowsableAPIRenderer', # 返回HTML页面
+        'rest_framework.renderers.JSONRenderer',  # 默认返回json
+        'rest_framework.renderers.BrowsableAPIRenderer',  # 返回HTML页面
     ],
     # 指定过滤引擎
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.backends.DjangoFilterBackend'],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.backends.DjangoFilterBackend', # 指定过滤引擎
+        'rest_framework.filters.OrderingFilter', # 指定排序引擎
+    ],
+
 }

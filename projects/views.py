@@ -29,6 +29,9 @@ class ProjectsView(GenericAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter] # 指定排序引擎
     # （5）步骤五：filterset_fields来指定需要过滤的字段，字段名称一定要与模型类中的字段名称保持一致，并且为精确匹配。
     filterset_fields=['name','leader','id']
+    # 指定哪些字段排序
+    ordering_fields=['id','name']
+    # 备注：先对id进行升序排序，然后对于name进行升序排序
 
     def get(self, request):  # request:需要request接收，接收http的request对象
         """获取项目的所有信息"""
