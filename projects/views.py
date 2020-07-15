@@ -17,9 +17,13 @@ class ProjectsView(GenericAPIView):
     # （1）步骤一：安装：django - filter第三方模块　
     # （2）步骤二：进行注册子应用操作：因为django - filter是第三方的子应用，所以需要在全局Dev04 / settings.py文件中指定过滤引擎。
     # （4）步骤四：filter_backends来指定使用的过滤的引擎，如果有多个过滤引擎，可以在列表中添加
-    filter_backends = [DjangoFilterBackend]
+
+    # 也可以在全局settings.py配置文件中指定所用视图公用的过滤引擎
+    # 如果视图中未指定，那么会使用全局的过滤引擎；如果视图中有指定，那么会使用视图中指定的过滤引擎（优先级更高）
+    # filter_backends = [DjangoFilterBackend]
     # （5）步骤五：filterset_fields来指定需要过滤的字段，字段名称一定要与模型类中的字段名称保持一致，并且为精确匹配。
     filterset_fields=['name','leader','id']
+
     def get(self, request):  # request:需要request接收，接收http的request对象
         """获取项目的所有信息"""
 

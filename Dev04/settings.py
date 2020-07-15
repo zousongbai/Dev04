@@ -145,4 +145,6 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer', # 默认返回json
         'rest_framework.renderers.BrowsableAPIRenderer', # 返回HTML页面
     ],
+    # 指定过滤引擎
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.backends.DjangoFilterBackend'],
 }
