@@ -9,6 +9,11 @@ from rest_framework.generics import GenericAPIView
 # （3）步骤三：导入DjangoFilterBackend过滤引擎
 from django_filters.rest_framework import DjangoFilterBackend # 导入DjangoFilterBackend过滤的引擎
 
+# 排序
+# from rest_framework import filters
+# 或
+from rest_framework.filters import OrderingFilter
+
 class ProjectsView(GenericAPIView):
 
     queryset =Projects.objects.all()
@@ -20,7 +25,8 @@ class ProjectsView(GenericAPIView):
 
     # 也可以在全局settings.py配置文件中指定所用视图公用的过滤引擎
     # 如果视图中未指定，那么会使用全局的过滤引擎；如果视图中有指定，那么会使用视图中指定的过滤引擎（优先级更高）
-    # filter_backends = [DjangoFilterBackend]
+    # filter_backends = [DjangoFilterBackend,filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, OrderingFilter] # 指定排序引擎
     # （5）步骤五：filterset_fields来指定需要过滤的字段，字段名称一定要与模型类中的字段名称保持一致，并且为精确匹配。
     filterset_fields=['name','leader','id']
 
