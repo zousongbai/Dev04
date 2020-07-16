@@ -11,6 +11,7 @@ from rest_framework import validators
 from .models import Projects
 
 from interfaces.serializers import InterfacesModelSerializer
+from utils.datetime_fmt import datetime_fmt
 
 def is_name_contain_x(value):
     """
@@ -118,7 +119,7 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     import utils # 自定义工具
     # ②中文格式：2020年3月20日　
     update_time = serializers.DateTimeField(label='更新时间', help_text='更新时间',
-                                            format=utils.datetime_fmt, required=False)
+                                            format=datetime_fmt, required=False)
 
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定

@@ -150,7 +150,10 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',  # 指定排序引擎
     ],
     # 需要指定分页引擎，可以使用默认的PageNumberPagination分页引擎类
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+
+    # 指定自定义的引擎类
+    'DEFAULT_PAGINATION_CLASS': 'utils.pagination.MyPagination',
     # 必须指定每一页的数据条数
     'PAGE_SIZE': 3,
 }

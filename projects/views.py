@@ -8,8 +8,9 @@ from rest_framework import status # 自定义状态码需导入status
 from rest_framework.generics import GenericAPIView
 # （3）步骤三：导入DjangoFilterBackend过滤引擎
 from django_filters.rest_framework import DjangoFilterBackend # 导入DjangoFilterBackend过滤的引擎
-
 from rest_framework.filters import OrderingFilter
+# 导入自定义的分页引擎，用于仅仅指定对某个视图来进行分页
+from utils.pagination import MyPagination
 
 class ProjectsView(GenericAPIView):
 
@@ -29,6 +30,9 @@ class ProjectsView(GenericAPIView):
     # 指定哪些字段排序
     ordering_fields=['id','name']
     # 备注：先对id进行升序排序，然后对于name进行升序排序
+
+    # 在视图中指定分页引擎类，仅仅指定对某个视图来进行分页　
+    pagination_class = MyPagination
 
     def get(self, request):  # request:需要request接收，接收http的request对象
         """获取项目的所有信息"""

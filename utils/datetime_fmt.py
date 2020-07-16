@@ -1,8 +1,8 @@
-# -*- coding    : utf-8 -*-
+# -*- coding:utf-8 -*-
 # @Author       : 小青年
 # @ProjectName  :Dev04
-# @File         : utils.py
-# @Time         : 2020/7/9 23:00
+# @File         : datetime_fmt.py
+# @Time         : 2020/7/16 15:55
 
 # 导入locale
 import locale  # locale：专门处理编码
