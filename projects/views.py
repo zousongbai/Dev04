@@ -58,52 +58,27 @@ class ProjectsView(GenericAPIView):
 
     def post(self, request):
         """创建项目"""
-        # ret不能放在全局，因为其他接口请求的时候，会状态的更新，所以不能放在全局
-        ret = {
-            "msg": "",
-            "code": 0
-        }
 
         # serializer_obj1 = ProjectsModelSerializer(data=request.data) # 根据请求头的Content-Type，就会自动的解析
         serializer_obj1 = self.get_serializer(data=request.data)
-        try:
-            # raise_exception=True：当校验失败，会报异常
-            serializer_obj1.is_valid(raise_exception=True)
-        except Exception as e:
-            ret['msg'] = '参数有误'
-            ret.update(serializer_obj1.errors)
-            # return JsonResponse(ret, status=400)
-            return Response(ret, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer_obj1.is_valid(raise_exception=True)
 
         serializer_obj1.save()
 
         # 向前端返回json格式的数据
-        ret['msg'] = '成功'
-        ret.update(serializer_obj1.data)
-
-        return Response(ret,status=status.HTTP_201_CREATED)
+        return Response(serializer_obj1.data,status=status.HTTP_201_CREATED)
 
 class ProjectDetailView(GenericAPIView):
-    def get_object(self, pk):
-        """获取模型类对象"""
-        try:
-            # 获取模型类对象
-            obj = Projects.objects.get(id=pk)
-        except Exception as e:
-            result = {
-                "msg": "参数有误",
-                "code": 0
-            }
-            # return JsonResponse(result, status=400)
-            # 抛出异常
-            raise Http404
-        return obj
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsModelSerializer
 
     def get(self, request, pk):
         """获取项目详情"""
 
         # 获取模型类对象
-        obj=self.get_object(pk)
+        # obj=self.get_object(pk)
+        obj = self.get_object()
 
         # serializer_obj = ProjectsModelSerializer(instance=obj)  # instance：可以接收模型类对象，也可以接收查询集对象。返回单个数据是，此处是模型类对象
         serializer_obj = self.get_serializer(instance=obj)
@@ -113,31 +88,19 @@ class ProjectDetailView(GenericAPIView):
     def put(self, request, pk):
         """更新项目"""
 
-        # ret不能放在全局，因为其他接口请求的时候，会状态的更新，所以不能放在全局
-        ret = {
-            "msg": "",
-            "code": 0
-        }
-
         # 获取模型类对象
-        obj = self.get_object(pk)
+        # obj = self.get_object(pk)
+        obj = self.get_object()
 
         serializer_obj1 = self.get_serializer(instance=obj, data=request.data)
         # data：做数据校验的工作，即反列化。涉及到数据校验，就需要给data传参
         # instance：做的是序列化操作
         # 同时给data和instance传参，往往做的是创建，意思是对obj对象进行修改，前端传的参数用data接收，更新的对象用instance去指定
 
+        # 在视图中抛出的异常，DRF会自动处理
+        # 直接将报错信息以json格式返回
+        serializer_obj1.is_valid(raise_exception=True)
 
-        try:
-            # raise_exception=True：当校验失败，会报异常
-            # ②序列化器对象调用is_valid方法去做校验
-            serializer_obj1.is_valid(raise_exception=True)
-        except Exception as e:
-            # ③校验之后，如果有异常，就处理异常后，再返回
-            ret['msg'] = '参数有误'
-            ret.update(serializer_obj1.errors)
-            # return JsonResponse(ret, status=400)
-            return Response(ret,status=status.HTTP_400_BAD_REQUEST)
 
         # 调用序列化器对象中的save方法
         # serializer_obj1.save(user='花花')
@@ -149,14 +112,10 @@ class ProjectDetailView(GenericAPIView):
     def delete(self, request, pk):
         """删除项目"""
         # 获取模型类对象
-        obj = self.get_object(pk)
+        # obj = self.get_object(pk)
+        obj = self.get_object()
 
         # 删除
         obj.delete()
 
-        # 返回
-        python_data = {
-            'msg': '删除成功',
-            'code': 1
-        }
-        return Response(python_data,status=status.HTTP_204_NO_CONTENT)
+        return Response(None,status=status.HTTP_204_NO_CONTENT)
