@@ -9,9 +9,6 @@ from rest_framework.generics import GenericAPIView
 # （3）步骤三：导入DjangoFilterBackend过滤引擎
 from django_filters.rest_framework import DjangoFilterBackend # 导入DjangoFilterBackend过滤的引擎
 
-# 排序
-# from rest_framework import filters
-# 或
 from rest_framework.filters import OrderingFilter
 
 class ProjectsView(GenericAPIView):
@@ -35,18 +32,21 @@ class ProjectsView(GenericAPIView):
 
     def get(self, request):  # request:需要request接收，接收http的request对象
         """获取项目的所有信息"""
-
-        # （6）步骤六：需要调用.filter_queryset()方法，需要传递一个查询集对象，并返回一个查询集
-        projects_object=self.get_queryset()
-
+        # projects_object=self.get_queryset()
         # 过滤：将需要过滤的查询集传给filter_queryset
-        projects_object=self.filter_queryset(projects_object)
+        # projects_object=self.filter_queryset(projects_object)
+        projects_object = self.filter_queryset(self.get_queryset())
 
-        # name=request.query_params.get('name')
-        # if name is not None:
-        #     # 如果不为空，则在查询集上调用filter,查询出来的也是查询集，则覆盖之前的查询集
-        #     projects_object=projects_object.filter(name=name)
+        # 分页功能使用父类的paginate_queryset
+        page=self.paginate_queryset(projects_object)
 
+        # 判断是否有分页引擎，没有则返回所有的数据
+        if page is not None:
+            # 如果page返回的不是空，说明指定了分页的引擎，需要进行分页
+            # 先调用序列化器，得到序列化器对象
+            serializer_obj=self.get_serializer(instance=page,many=True) # 因为分页返回的数据有多条，所以需要使用many=True
+            # serializer_obj.data：使用的是序列化处理之后的数据，用data属性
+            return self.get_paginated_response(serializer_obj.data)
         serializer_obj = self.get_serializer(instance=projects_object, many=True) # 使用父类提供的get_serializer()方法
 
         return Response(serializer_obj.data,status=status.HTTP_200_OK)
@@ -71,14 +71,12 @@ class ProjectsView(GenericAPIView):
             # return JsonResponse(ret, status=400)
             return Response(ret, status=status.HTTP_400_BAD_REQUEST)
 
-        # 在序列化器对象调用save方法时，传递的关键字参数，会自动添加到序列化器类中的create方法，validated_data字典中
-        # serializer_obj1.save(user='小狼')
         serializer_obj1.save()
 
-        # （4）步骤四：向前端返回json格式的数据
+        # 向前端返回json格式的数据
         ret['msg'] = '成功'
         ret.update(serializer_obj1.data)
-        # return JsonResponse(ret, status=201)
+
         return Response(ret,status=status.HTTP_201_CREATED)
 
 class ProjectDetailView(GenericAPIView):
@@ -120,7 +118,6 @@ class ProjectDetailView(GenericAPIView):
         # 获取模型类对象
         obj = self.get_object(pk)
 
-        # serializer_obj1 = ProjectsModelSerializer(instance=obj,data=request.data)
         serializer_obj1 = self.get_serializer(instance=obj, data=request.data)
         # data：做数据校验的工作，即反列化。涉及到数据校验，就需要给data传参
         # instance：做的是序列化操作
@@ -143,7 +140,6 @@ class ProjectDetailView(GenericAPIView):
         serializer_obj1.save()
 
         # 使用序列化器对象.data返回
-        # return JsonResponse(serializer_obj1.data, status=201)
         return Response(serializer_obj1.data,status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):
@@ -159,5 +155,4 @@ class ProjectDetailView(GenericAPIView):
             'msg': '删除成功',
             'code': 1
         }
-        # return JsonResponse(python_data, status=200)
         return Response(python_data,status=status.HTTP_204_NO_CONTENT)

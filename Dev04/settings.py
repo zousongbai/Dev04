@@ -60,8 +60,8 @@ ROOT_URLCONF = 'Dev04.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        # APP_DIRS：设为True的意思是查找模板可以去子应用下面去查找
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -146,8 +146,11 @@ REST_FRAMEWORK = {
     ],
     # 指定过滤引擎
     'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.backends.DjangoFilterBackend', # 指定过滤引擎
-        'rest_framework.filters.OrderingFilter', # 指定排序引擎
+        'django_filters.rest_framework.backends.DjangoFilterBackend',  # 指定过滤引擎
+        'rest_framework.filters.OrderingFilter',  # 指定排序引擎
     ],
-
+    # 需要指定分页引擎，可以使用默认的PageNumberPagination分页引擎类
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 必须指定每一页的数据条数
+    'PAGE_SIZE': 3,
 }
