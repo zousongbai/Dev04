@@ -35,12 +35,16 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 # 当前ViewSet，无法支持.get_object()、.filter_queryset()、paginate_queryset()
 # class ProjectsViewSet(viewsets.ViewSet):
 # GenericViewSet才支持对列表数据进行过滤、排序、分页操作
-class ProjectsViewSet(mixins.ListModelMixin, # 提供list方法
-                      mixins.CreateModelMixin, # 提供create方法
-                      mixins.RetrieveModelMixin, # 提供retrieve方法
-                      mixins.UpdateModelMixin, # 提供update方法
-                      mixins.DestroyModelMixin, # 提供destroy方法
-                      viewsets.GenericViewSet):
+# class ProjectsViewSet(mixins.ListModelMixin, # 提供list方法
+#                       mixins.CreateModelMixin, # 提供create方法
+#                       mixins.RetrieveModelMixin, # 提供retrieve方法
+#                       mixins.UpdateModelMixin, # 提供update方法
+#                       mixins.DestroyModelMixin, # 提供destroy方法
+#                       viewsets.GenericViewSet):
+
+# 使用ModelViewSet类对上面提供的五个方法进行优化：class ProjectsViewSet(viewsets.ModelViewSet):
+# 如果仅仅是读取数据，则继承ReadOnlyModelViewSet类：class ProjectsViewSet(viewsets.ReadOnlyModelViewSet):
+class ProjectsViewSet(viewsets.ModelViewSet):
     # 继承的时候，一定要先继承mixins扩展类，再继承GenericAPIView
     queryset = Projects.objects.all()
     serializer_class = ProjectsModelSerializer
@@ -52,19 +56,3 @@ class ProjectsViewSet(mixins.ListModelMixin, # 提供list方法
     # 指定哪些字段排序
     ordering_fields = ['id', 'name']
     # 备注：先对id进行升序排序，然后对于name进行升序排序
-
-    # # 这些方法称为action
-    # def list(self,request, *args, **kwargs):
-    #     pass
-    #
-    # def create(self,request, *args, **kwargs):
-    #     pass
-    #
-    # def retrieve(self,request, *args, **kwargs):
-    #     pass
-    #
-    # def update(self,request, *args, **kwargs):
-    #     pass
-    #
-    # def destroy(self,request, *args, **kwargs):
-    #     pass
