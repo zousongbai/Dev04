@@ -1,0 +1,14 @@
+1.GenericAPIView有什么特性?
+（1）GenericAPIView支持对get、post、put、delete、patch等请求方法
+
+2.ViewSet与GenericViewSet有什么区别?
+（1）GenericViewSet
+①继承ViewSetMixin和generics.GenercAPIView
+ 支持get_object、get_queryset、get_serializer、filter_queryset、paginate_queryset
+②在定义路由时，需要将请求方法与action动作进行绑定
+（2）ViewSet
+①继承ViewSetMixin和views.APIView
+②ViewSetMixin支持action动作
+③ViewSet，无法支持.get_object()、.filter_queryset()、paginate_queryset()
+3.ModelViewSet支持哪些Action？
+create(), retrieve(), update(),partial_update(), destroy() 、`list()
