@@ -5,12 +5,27 @@
 # @Time         : 2020/6/19 14:05
 
 from django.urls import path
-
 # 导入类视图
 from projects import views
 
+
 urlpatterns = [
-    path('projects/',views.ProjectsView.as_view()),
-    path('projects/<int:pk>/',views.ProjectDetailView.as_view()),
+    # （1）继承ViewSet之后，支持在定义路由时指定请求方法与action的映射
+    # （2）as_view需要接收一个字典
+    # （3）key为请求方法名，value为指定需要调用的action
+    path('projects/',views.ProjectsViewSet.as_view(
+        {   # 请求方法与指定的action一一映射
+            'get':'list',
+            'post':'create',
+        }
+    )),
+    path('projects/<int:pk>/',views.ProjectsViewSet.as_view(
+        {
+            # 请求方法与指定的action一一映射
+            'get':'retrieve',
+            'put':'update',
+            'delete':'destroy',
+        }
+    )),
 ]
 # url设计的时候，有时候要传递id，有时候不需要传递id，怎样解决
