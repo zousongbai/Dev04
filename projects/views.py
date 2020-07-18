@@ -1,4 +1,3 @@
-
 from projects.models import Projects
 from .serializers import ProjectsModelSerializer
 # 导入DjangoFilterBackend过滤引擎
@@ -10,6 +9,7 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView
 # 导入视图集
 from rest_framework import viewsets
+
 
 class ProjectsView(generics.ListCreateAPIView):
     # 继承的时候，一定要先继承mixins扩展类，再继承GenericAPIView
@@ -28,6 +28,7 @@ class ProjectsView(generics.ListCreateAPIView):
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Projects.objects.all()
     serializer_class = ProjectsModelSerializer
+
 
 # 合并上面两个类：ProjectsView、ProjectDetailView
 # GenericAPIView和APIView只支持对get、post、put、delete、patch等请求方法
@@ -55,4 +56,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     filterset_fields = ['name', 'leader', 'id']
     # 指定哪些字段排序
     ordering_fields = ['id', 'name']
+
     # 备注：先对id进行升序排序，然后对于name进行升序排序
+
+    def destroy(self, request, *args, **kwargs):
+        """父类删除后返回空，重写destroy方法删除后返回一个特定字符"""
