@@ -35,5 +35,13 @@ urlpatterns = [
             'delete':'destroy',
         }
     )),
+
+    # 获取项目的接口数据
+    path('projects/<int:pk>/interfaces/',views.ProjectsViewSet.as_view(
+        {
+            # 请求方法与指定的action一一映射
+            'get':'interfaces'
+        }
+    )),
 ]
 # url设计的时候，有时候要传递id，有时候不需要传递id，怎样解决

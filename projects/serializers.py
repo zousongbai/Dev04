@@ -9,6 +9,8 @@ from rest_framework import serializers
 from rest_framework import validators
 # 导入模型类
 from .models import Projects
+# 导入Interfaces
+from interfaces.models import Interfaces
 
 from interfaces.serializers import InterfacesModelSerializer
 from utils.datetime_fmt import datetime_fmt
@@ -116,7 +118,7 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     # update_time=serializers.DateTimeField(label='更新时间',help_text='更新时间',
     #                                       format='%Y-%m-%d %H:%M:%S',required=False)
 
-    import utils # 自定义工具
+    # import utils # 自定义工具
     # ②中文格式：2020年3月20日　
     update_time = serializers.DateTimeField(label='更新时间', help_text='更新时间',
                                             format=datetime_fmt, required=False)
@@ -174,3 +176,24 @@ class ProjectsNameModelSerializer(serializers.ModelSerializer):
         # 只需要id和name
         fields=('id','name')
 
+class InterfacesNameModelSerializer(serializers.ModelSerializer):
+    """只返回接口的id和name"""
+
+    class Meta:
+        # 指定要生成的模型
+        model = Interfaces
+
+        # 只需要id和name
+        fields = ('id', 'name')
+
+class InterfacesByProjectsIdModelSerializer(serializers.ModelSerializer):
+    """通过项目id获取接口信息"""
+    interfaces=InterfacesNameModelSerializer(many=True,read_only=True)
+
+    # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
+    class Meta:  # 类名固定
+        # 需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
+        # 指定要生成的模型
+        model=Projects
+        # fields类属性来指定，模型类中哪些字段需要输入或输出
+        fields = ('interfaces',)

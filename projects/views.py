@@ -11,7 +11,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework import viewsets
 # 导入action装饰器
 from rest_framework.decorators import action
-from .serializers import ProjectsModelSerializer,ProjectsNameModelSerializer
+from .serializers import (ProjectsModelSerializer,
+                          ProjectsNameModelSerializer,
+                          InterfacesByProjectsIdModelSerializer
+                         )
 
 class ProjectsView(generics.ListCreateAPIView):
     # 继承的时候，一定要先继承mixins扩展类，再继承GenericAPIView
@@ -89,11 +92,22 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
         return Response(serializer_obj.data)
 
+    @action(detail=True )
+    # 默认methods=['get']
+    # 如果需要传递主键id，那么detail = True
+    def interfaces(self,request,*args,**kwargs):
+        # 获取当前的模型类对象
+        instance=self.get_object()
+        serializer_obj =self.get_serializer(instance=instance)
+        return Response(serializer_obj.data)
+
     def get_serializer_class(self):
         """重写get_serializer_class"""
         # 使用self.get_serializer的时候胡调用get_serializer_class
         if self.action=='names':
             # self.action：获取当前的action
             return ProjectsNameModelSerializer
+        elif self.action=='interfaces':
+            return InterfacesByProjectsIdModelSerializer
         else:
             return self.serializer_class
