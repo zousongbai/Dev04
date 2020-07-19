@@ -69,11 +69,31 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     @action(methods=['get'],detail=False,)
     def names(self,request):
         """获取项目名称"""
-
-        # 使用序列化器，得到序列化器对象
-        serializer_obj=ProjectsNameModelSerializer(instance=self.get_queryset(),many=True)
-        # 备注：因为项目名称有多个，所以需要传many=True
-
         # 进行过滤和分页操作
+        # ①过滤
+        qs=self.filter_queryset(self.get_queryset())
+        # ②分页
+        page=self.paginate_queryset(qs)
+        # 判断是否有分页引擎，没有则返回所有的数据
+        if page is not None:
+            # 先调用序列化器，得到序列化器对象
+            serializer_obj = self.get_serializer(instance=page, many=True)
+            # 备注：因为分页返回的数据有多条，所以需要使用many=True
+            return self.get_paginated_response(serializer_obj.data)
+
+        # # 使用序列化器，得到序列化器对象
+        # serializer_obj=ProjectsNameModelSerializer(instance=self.get_queryset(),many=True)
+        # # 备注：因为项目名称有多个，所以需要传many=True
+        # serializer_obj = self.get_serializer(instance=self.get_queryset(), many=True)
+        serializer_obj = self.get_serializer(instance=qs, many=True)
 
         return Response(serializer_obj.data)
+
+    def get_serializer_class(self):
+        """重写get_serializer_class"""
+        # 使用self.get_serializer的时候胡调用get_serializer_class
+        if self.action=='names':
+            # self.action：获取当前的action
+            return ProjectsNameModelSerializer
+        else:
+            return self.serializer_class
