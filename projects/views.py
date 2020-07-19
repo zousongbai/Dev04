@@ -1,5 +1,5 @@
+from rest_framework.response import Response
 from projects.models import Projects
-from .serializers import ProjectsModelSerializer
 # 导入DjangoFilterBackend过滤引擎
 from django_filters.rest_framework import DjangoFilterBackend  # 导入DjangoFilterBackend过滤的引擎
 from rest_framework.filters import OrderingFilter
@@ -9,7 +9,9 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView
 # 导入视图集
 from rest_framework import viewsets
-
+# 导入action装饰器
+from rest_framework.decorators import action
+from .serializers import ProjectsModelSerializer,ProjectsNameModelSerializer
 
 class ProjectsView(generics.ListCreateAPIView):
     # 继承的时候，一定要先继承mixins扩展类，再继承GenericAPIView
@@ -57,7 +59,21 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # 指定哪些字段排序
     ordering_fields = ['id', 'name']
 
-    # 备注：先对id进行升序排序，然后对于name进行升序排序
+    # （1）可以使用action装饰器去自定义动作方法（action）
+    # （2）methods参数默认为['get']，可以定义支持请求方式['get', 'post', 'put']
+    # （3）detail参数为必传参数，指定是否为详情数据。
+    # ①如果需要传递主键id，那么detail = True
+    # ②否则detail = False
+    # （4）url_path：指定url部分，默认为action名称（当前为names）
+    # （5）url_name：指定url的名称，默认为action名称（当前为names）
+    @action(methods=['get'],detail=False,)
+    def names(self,request):
+        """获取项目名称"""
 
-    def destroy(self, request, *args, **kwargs):
-        """父类删除后返回空，重写destroy方法删除后返回一个特定字符"""
+        # 使用序列化器，得到序列化器对象
+        serializer_obj=ProjectsNameModelSerializer(instance=self.get_queryset(),many=True)
+        # 备注：因为项目名称有多个，所以需要传many=True
+
+        # 进行过滤和分页操作
+
+        return Response(serializer_obj.data)

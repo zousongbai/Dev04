@@ -19,6 +19,14 @@ urlpatterns = [
             'post':'create',
         }
     )),
+
+    path('projects/names/',views.ProjectsViewSet.as_view(
+        {   # 请求方法与指定的action一一映射
+            'get':'names', # 指定get方法请求，并且url是projects/names/就会访问names
+
+        }
+    )),
+
     path('projects/<int:pk>/',views.ProjectsViewSet.as_view(
         {
             # 请求方法与指定的action一一映射

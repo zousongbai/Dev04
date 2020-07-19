@@ -165,3 +165,12 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
     #     return super().create(validated_data)
         # return Projects.objects.create(**validated_data)
 
+class ProjectsNameModelSerializer(serializers.ModelSerializer):
+    """只返回id和name"""
+    class Meta:
+        # 指定要生成的模型
+        model = Projects
+
+        # 只需要id和name
+        fields=('id','name')
+
