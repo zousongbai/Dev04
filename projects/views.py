@@ -36,17 +36,6 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 # 合并上面两个类：ProjectsView、ProjectDetailView
-# GenericAPIView和APIView只支持对get、post、put、delete、patch等请求方法
-# 如果要支持action（get、post、put、delete、patch等请求方法），那么需要继承ViewSet
-# 当前ViewSet，无法支持.get_object()、.filter_queryset()、paginate_queryset()
-# class ProjectsViewSet(viewsets.ViewSet):
-# GenericViewSet才支持对列表数据进行过滤、排序、分页操作
-# class ProjectsViewSet(mixins.ListModelMixin, # 提供list方法
-#                       mixins.CreateModelMixin, # 提供create方法
-#                       mixins.RetrieveModelMixin, # 提供retrieve方法
-#                       mixins.UpdateModelMixin, # 提供update方法
-#                       mixins.DestroyModelMixin, # 提供destroy方法
-#                       viewsets.GenericViewSet):
 
 # 使用ModelViewSet类对上面提供的五个方法进行优化：class ProjectsViewSet(viewsets.ModelViewSet):
 # 如果仅仅是读取数据，则继承ReadOnlyModelViewSet类：class ProjectsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -67,9 +56,9 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # （3）detail参数为必传参数，指定是否为详情数据。
     # ①如果需要传递主键id，那么detail = True
     # ②否则detail = False
-    # （4）url_path：指定url部分，默认为action名称（当前为names）
-    # （5）url_name：指定url的名称，默认为action名称（当前为names）
-    @action(methods=['get'],detail=False,)
+    # （4）url_path：指定url路径部分，默认为action名称（当前为names）
+    # （5）url_name：指定url的名称，默认为action名称（当前为names，完整的路由名称为action名称(name),然后跟上list或其他），会在前后端不分离的时候用到
+    @action(methods=['get'],detail=False,url_path='nnn')
     def names(self,request):
         """获取项目名称"""
         # 进行过滤和分页操作

@@ -11,7 +11,10 @@ from projects import views
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 # 定义SimpleRouter路由对象　
-router = SimpleRouter()
+# router = SimpleRouter()
+# 使用DefaultRouter路由器
+router = DefaultRouter()
+
 # 使用路由对象.register()方法，来进行注册
 # ①第一个参数：指定路由前缀，通用方式：r'子应用名小写'
 # ②第二个参数：指定视图集类即可，不要调用.as_view()方法
@@ -19,6 +22,7 @@ router.register(r'projects', views.ProjectsViewSet, basename=None)
 # prefix：路由前缀，如：r'projects/'
 # viewset：视图集，如：views.ProjectsViewSet
 urlpatterns = [
+    # path('projects/',views.ProjectsViewSet.as_view())
     # # （1）继承ViewSet之后，支持在定义路由时指定请求方法与action的映射
     # # （2）as_view需要接收一个字典
     # # （3）key为请求方法名，value为指定需要调用的action
