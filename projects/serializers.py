@@ -129,10 +129,10 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         # 指定要生成的模型
         model=Projects
         # （3）fields类属性来指定，模型类中哪些字段需要输入或输出
-        fields = ( 'id', 'name', 'leader', 'tester', 'programmer', 'create_time', 'update_time',  'interfaces')
+        # fields = ( 'id', 'name', 'leader', 'tester', 'programmer', 'create_time', 'update_time',  'interfaces')
 
         # ③把需要排除的字段放在exclude中，过滤不生成的字段，不参与输入也不参与输出
-        # exclude=('desc',)
+        exclude=('desc','create_time')
 
         # 可以在read_only_fields中指定需要进行read_only=True的字段，统一指定要只输出不输入的字段，
         read_only_fields = ('id', 'desc', 'programmer')
