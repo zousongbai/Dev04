@@ -107,8 +107,19 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # 如果需要传递主键id，那么detail = True
     def interfaces(self,request,*args,**kwargs):
         # 获取当前的模型类对象
-        instance=self.get_object()
-        serializer_obj =self.get_serializer(instance=instance)
+        # instance=self.get_object()
+        # 进行过滤和分页操作
+        # ①过滤
+        qs = self.filter_queryset(self.get_queryset())
+        # ②分页
+        page = self.paginate_queryset(qs)
+        # 判断是否有分页引擎，没有则返回所有的数据
+        if page is not None:
+            # 先调用序列化器，得到序列化器对象
+            serializer_obj = self.get_serializer(instance=page, many=True)
+            # 备注：因为分页返回的数据有多条，所以需要使用many=True
+            return self.get_paginated_response(serializer_obj.data)
+        serializer_obj =self.get_serializer(instance=qs)
         return Response(serializer_obj.data)
 
     def get_serializer_class(self):
