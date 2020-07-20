@@ -66,11 +66,11 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectsModelSerializer
 
     # # 指定过滤引擎、排序引擎
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    # filterset_fields来指定需要过滤的字段，字段名称一定要与模型类中的字段名称保持一致，并且为精确匹配。
-    # filterset_fields = ['name', 'leader', 'id']
-    # 指定哪些字段排序
-    ordering_fields = ['id', 'name']
+    # filter_backends = [DjangoFilterBackend, OrderingFilter]
+    # # filterset_fields来指定需要过滤的字段，字段名称一定要与模型类中的字段名称保持一致，并且为精确匹配。
+    # # filterset_fields = ['name', 'leader', 'id']
+    # # 指定哪些字段排序
+    # ordering_fields = ['id', 'name']
 
     # （1）可以使用action装饰器去自定义动作方法（action）
     # （2）methods参数默认为['get']，可以定义支持请求方式['get', 'post', 'put']
