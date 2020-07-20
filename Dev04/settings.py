@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'drf_yasg',
 
     # 注册子应用
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
@@ -156,4 +157,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'utils.pagination.MyPagination',
     # 必须指定每一页的数据条数
     'PAGE_SIZE': 3,
+
+    # 指定用于支持coreapi的Schema
+    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema'
 }

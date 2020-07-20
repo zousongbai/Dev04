@@ -40,6 +40,27 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 # 使用ModelViewSet类对上面提供的五个方法进行优化：class ProjectsViewSet(viewsets.ModelViewSet):
 # 如果仅仅是读取数据，则继承ReadOnlyModelViewSet类：class ProjectsViewSet(viewsets.ReadOnlyModelViewSet):
 class ProjectsViewSet(viewsets.ModelViewSet):
+    """
+    list:
+        获取项目的列表信息
+    retrive:
+        获取项目详情数据
+    create:
+        创建项目
+    names:
+        获取项目名称
+    interfaces:
+        获取某个项目下的接口名称
+    update:
+        更新项目
+    delete:
+        删除项目
+    partial_update:
+        部分更新
+    read:
+        获取项目详情
+    """
+
     # 继承的时候，一定要先继承mixins扩展类，再继承GenericAPIView
     queryset = Projects.objects.all()
     serializer_class = ProjectsModelSerializer

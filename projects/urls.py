@@ -12,6 +12,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 # 定义SimpleRouter路由对象　
 # router = SimpleRouter()
+# DefaultRouter相比SimpleRouter，自动添加了一条路径的路由/->：可浏览器的api页面
 # 使用DefaultRouter路由器
 router = DefaultRouter()
 
