@@ -17,6 +17,7 @@ from .serializers import (ProjectsModelSerializer,
                           InterfacesByProjectsIdModelSerializer
                          )
 # 定义日志器：此处的名称要与全局日志器的日志保持一致
+# 定义日志器用于记录日志，logging.getLogger('全局配置setting.py中定义的日志器')
 logger=logging.getLogger('mytest')
 
 class ProjectsView(generics.ListCreateAPIView):

@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# 把某个路径添加到系统模块搜索路径中去
+# sys.path为一个列表
+sys.path.append(os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -45,6 +50,11 @@ INSTALLED_APPS = [
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
     'projects.apps.ProjectsConfig',
     'interfaces',  # 注册子应用，可以直接使用子应用名
+
+    # 可以将某个目录（包）标记为SourceRoot，那么Pycharm会有智能提示
+    # 不是Python的特性
+    # 'apps.projects',
+    # 'apps.interfaces'
 
 ]
 
