@@ -24,7 +24,9 @@ SECRET_KEY = '@(35-t#w!nxzp3nuky6$8xl2fch*i!-sgk_omj4n(bpszg_7r@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# 可以使用哪些IP或者域名来访问系统
+# 默认为空，可以使用127.0.0.1或者localhost
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -160,4 +162,63 @@ REST_FRAMEWORK = {
 
     # 指定用于支持coreapi的Schema
     'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema'
+}
+
+
+# 可以在全局配置settings.py中的LOGGING，来配置日志信息
+LOGGING = {
+    # 版本号
+    'version': 1,
+    # 指定是否禁用已经存在的日志器
+    'disable_existing_loggers': False,
+    # 日志的显示格式
+    'formatters': {
+        # simple为简化版格式的日志
+        'simple': {
+            'format': '%(asctime)s - [%(levelname)s] - [msg]%(message)s'
+        },
+        # verbose为详细格式的日志
+        'verbose': {
+            'format': '%(asctime)s - [%(levelname)s] - %(name)s - [msg]%(message)s - [%(filename)s:%(lineno)d ]'
+            # filename：哪个文件出现的日志
+            # lineno：哪一行出现的日志，即打印出抛出日志的文件名和哪一行打印出来
+        },
+    },
+    # filters指定日志过滤器
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    # handlers指定日志输出渠道
+    'handlers': {
+        # console指定输出到控制台
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        # 日志保存到日志文件
+        'file': {
+            'level': 'DEBUG',
+            # RotatingFileHandler：轮转的日志输出渠道
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 指定存放日志文件的所处路径
+            'filename': os.path.join(BASE_DIR, "logs/test.text"),  # 日志文件的位置
+            # 备注：BASE_DIR：项目工程
+            # 一个日志文件最大存放多大字节：如设置100M
+            'maxBytes': 100 * 1024 * 1024,
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
+    },
+    # 定义日志器
+    'loggers': {
+        'mytest': {  # 定义了一个名为mytest的日志器
+            'handlers': ['console', 'file'],
+            'propagate': True,
+            'level': 'DEBUG',  # 日志器接收的最低日志级别
+        },
+    }
 }

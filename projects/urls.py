@@ -51,7 +51,7 @@ urlpatterns = [
     # )),
     #
     # # 获取项目的接口数据
-    # path('projects/<int:pk>/interfaces/',views.ProjectsViewSet.as_view(
+    # path('projects/<i:pk>/interfaces/nt',views.ProjectsViewSet.as_view(
     #     {
     #         # 请求方法与指定的action一一映射
     #         'get':'interfaces'
