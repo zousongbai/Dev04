@@ -172,7 +172,23 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 3,
 
     # 指定用于支持coreapi的Schema
-    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema',
+
+    # DEFAULT_AUTHENTICATION_CLASSES：指定默认的认证类（认证方式）
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 会话认证
+        'rest_framework.authentication.SessionAuthentication',
+        # 基本认证（用户名和密码认证），在测试或开发环境使用，生成环境不用
+        'rest_framework.authentication.BasicAuthentication'
+    ],
+
+    # DEFAULT_PERMISSION_CLASSES：指定认证之后，能获取到的权限
+    'DEFAULT_PERMISSION_CLASSES': [
+        # ①AllowAny：不需要登录就有任意权限
+        # 'rest_framework.permissions.AllowAny',
+        # ②IsAuthenticated：只要登录之后，就具体任务权限
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 
