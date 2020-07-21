@@ -249,3 +249,7 @@ LOGGING = {
         },
     }
 }
+
+# # 默认使用的是Django auth子应用下的User模型类
+# # 可以指定自定义的模型类
+# AUTH_USER_MODEL = 'auth.User'
