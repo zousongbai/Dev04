@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
     'projects.apps.ProjectsConfig',
     'interfaces',  # 注册子应用，可以直接使用子应用名
+    'user',
 
     # 可以将某个目录（包）标记为SourceRoot，那么Pycharm会有智能提示
     # 不是Python的特性
