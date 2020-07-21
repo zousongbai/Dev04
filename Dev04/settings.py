@@ -253,3 +253,6 @@ LOGGING = {
 # # 默认使用的是Django auth子应用下的User模型类
 # # 可以指定自定义的模型类
 # AUTH_USER_MODEL = 'auth.User'
+
+# User模型类中有很多字段，其中有一个is_staff字段，指定是否为超级管理员。如果未0，则为普通用户；如果为1，则为超级管理员
+# 可以在命令行下使用python manage.py createsuperuser，来创建超级管理员
