@@ -10,11 +10,13 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView
 # 导入视图集
 from rest_framework import viewsets
+from interfaces.models import Interfaces
 # 导入action装饰器
 from rest_framework.decorators import action
 from .serializers import (ProjectsModelSerializer,
                           ProjectsNameModelSerializer,
-                          InterfacesByProjectsIdModelSerializer
+                          InterfacesByProjectsIdModelSerializer,
+                          InterfacesByProjectsIdModelSerializer1,
                          )
 # 定义日志器：此处的名称要与全局日志器的日志保持一致
 # 定义日志器用于记录日志，logging.getLogger('全局配置setting.py中定义的日志器')
@@ -114,10 +116,11 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # 如果需要传递主键id，那么detail = True
     def interfaces(self,request,*args,**kwargs):
         # 获取当前的模型类对象
-        # instance=self.get_object()
+        instance=self.get_object()
         # 进行过滤和分页操作
         # ①过滤
-        qs = self.filter_queryset(self.get_queryset())
+        # qs = self.filter_queryset(self.get_queryset())
+        qs=Interfaces.objects.filter(projects=instance)
         # ②分页
         page = self.paginate_queryset(qs)
         # 判断是否有分页引擎，没有则返回所有的数据
@@ -136,7 +139,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             # self.action：获取当前的action
             return ProjectsNameModelSerializer
         elif self.action=='interfaces':
-            return InterfacesByProjectsIdModelSerializer
+            # return InterfacesByProjectsIdModelSerializer
+            return InterfacesByProjectsIdModelSerializer1
         else:
             return self.serializer_class
 

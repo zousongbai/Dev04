@@ -197,3 +197,15 @@ class InterfacesByProjectsIdModelSerializer(serializers.ModelSerializer):
         model=Projects
         # fields类属性来指定，模型类中哪些字段需要输入或输出
         fields = ('interfaces',)
+
+class InterfacesByProjectsIdModelSerializer1(serializers.ModelSerializer):
+    """通过项目id获取接口信息：解决分页问题"""
+    # interfaces=InterfacesNameModelSerializer(many=True,read_only=True)
+
+    # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
+    class Meta:  # 类名固定
+        # 需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
+        # 指定要生成的模型
+        model=Interfaces
+        # fields类属性来指定，模型类中哪些字段需要输入或输出
+        fields = ('id','name')
