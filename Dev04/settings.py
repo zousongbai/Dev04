@@ -184,10 +184,14 @@ REST_FRAMEWORK = {
 
     # DEFAULT_PERMISSION_CLASSES：指定认证之后，能获取到的权限
     'DEFAULT_PERMISSION_CLASSES': [
-        # ①AllowAny：不需要登录就有任意权限
+        # ①AllowAny：不需要登录就有任意权限，只要登录之后，就具备任意权限
         # 'rest_framework.permissions.AllowAny',
         # ②IsAuthenticated：只要登录之后，就具体任务权限
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
+        # ③IsAdminUser：指定，只有为管理员用户才有任意权限
+        # 'rest_framework.permissions.IsAdminUser',
+        # ④IsAuthenticatedOrReadOnly：指定如果没有登录，只能获取数据；如果登录成功就具备任意权限
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
 }
 
