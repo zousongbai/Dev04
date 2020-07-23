@@ -46,7 +46,8 @@ urlpatterns = [
 
     path('',include('projects.urls')), # 使用include将子路由的路径传进去
 
-    #
     path('api/',include('rest_framework.urls')),
+
+    path('user/',include('user.urls')),
 ]
 

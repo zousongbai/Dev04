@@ -79,7 +79,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
     # permission_classes：在视图中指定权限，可以在列表中添加多个权限类
     # 视图中指定的权限优先级大于全局指定的权限
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated] # IsAuthenticated：必须登录才能访问
 
     # # 指定过滤引擎、排序引擎
     # filter_backends = [DjangoFilterBackend, OrderingFilter]

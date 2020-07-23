@@ -176,23 +176,28 @@ REST_FRAMEWORK = {
 
     # DEFAULT_AUTHENTICATION_CLASSES：指定默认的认证类（认证方式）
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 指定使用JWT token认证方式，即jsonwebtoken认证
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        
         # 会话认证
         'rest_framework.authentication.SessionAuthentication',
         # 基本认证（用户名和密码认证），在测试或开发环境使用，生成环境不用
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication',
+
+
     ],
 
     # DEFAULT_PERMISSION_CLASSES：指定认证之后，能获取到的权限
-    'DEFAULT_PERMISSION_CLASSES': [
-        # ①AllowAny：不需要登录就有任意权限，只要登录之后，就具备任意权限
-        # 'rest_framework.permissions.AllowAny',
-        # ②IsAuthenticated：只要登录之后，就具体任务权限
-        # 'rest_framework.permissions.IsAuthenticated',
-        # ③IsAdminUser：指定，只有为管理员用户才有任意权限
-        # 'rest_framework.permissions.IsAdminUser',
-        # ④IsAuthenticatedOrReadOnly：指定如果没有登录，只能获取数据；如果登录成功就具备任意权限
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     # ①AllowAny：不需要登录就有任意权限，只要登录之后，就具备任意权限
+    #     'rest_framework.permissions.AllowAny',
+    #     # ②IsAuthenticated：只要登录之后，就具体任务权限
+    #     # 'rest_framework.permissions.IsAuthenticated',
+    #     # ③IsAdminUser：指定，只有为管理员用户才有任意权限
+    #     # 'rest_framework.permissions.IsAdminUser',
+    #     # ④IsAuthenticatedOrReadOnly：指定如果没有登录，只能获取数据；如果登录成功就具备任意权限
+    #     # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    # ],
 }
 
 
