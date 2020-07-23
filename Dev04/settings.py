@@ -9,9 +9,9 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-
 import os
 import sys
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -172,18 +172,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 3,
 
     # 指定用于支持coreapi的Schema
-    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 
     # DEFAULT_AUTHENTICATION_CLASSES：指定默认的认证类（认证方式）
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 指定使用JWT token认证方式，即jsonwebtoken认证
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        
+
         # 会话认证
         'rest_framework.authentication.SessionAuthentication',
         # 基本认证（用户名和密码认证），在测试或开发环境使用，生成环境不用
         'rest_framework.authentication.BasicAuthentication',
-
 
     ],
 
@@ -199,7 +198,6 @@ REST_FRAMEWORK = {
     #     # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     # ],
 }
-
 
 # 可以在全局配置settings.py中的LOGGING，来配置日志信息
 LOGGING = {
@@ -265,3 +263,19 @@ LOGGING = {
 
 # User模型类中有很多字段，其中有一个is_staff字段，指定是否为超级管理员。如果未0，则为普通用户；如果为1，则为超级管理员
 # 可以在命令行下使用python manage.py createsuperuser，来创建超级管理员
+
+# 在全局配置JWT_AUTH中，可以覆盖JWT相关的参数
+JWT_AUTH = {
+    # 指定处理登录接口响应数据的函数
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+        'utils.jwt_handle.jwt_response_payload_handler',
+    # 前端用户访问一些需要认证之后的接口，那么默认需要在请求头中携带参数，
+    # 请求key为Authorization，值为前缀+空格+token值，如：JWT xxxjjgkhg
+
+    # 可以指定token过期时间，默认为5分钟
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    #  days=1：一天后到期
+
+    # 指定前端传递token值得前缀
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
