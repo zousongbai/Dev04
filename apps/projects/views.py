@@ -13,6 +13,8 @@ from rest_framework import viewsets
 from interfaces.models import Interfaces
 # 导入action装饰器
 from rest_framework.decorators import action
+from rest_framework import permissions
+
 from .serializers import (ProjectsModelSerializer,
                           ProjectsNameModelSerializer,
                           InterfacesByProjectsIdModelSerializer,
@@ -70,6 +72,14 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # 继承的时候，一定要先继承mixins扩展类，再继承GenericAPIView
     queryset = Projects.objects.all()
     serializer_class = ProjectsModelSerializer
+
+    # authentication_classes：在视图中指定认证方式，可以在列表中添加多个认证类
+    # 视图中指定的认证方式优先级大于全局指定的认证方式
+    # authentication_classes =['']
+
+    # permission_classes：在视图中指定权限，可以在列表中添加多个权限类
+    # 视图中指定的权限优先级大于全局指定的权限
+    permission_classes = [permissions.AllowAny]
 
     # # 指定过滤引擎、排序引擎
     # filter_backends = [DjangoFilterBackend, OrderingFilter]
