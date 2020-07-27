@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,12 +63,28 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 需要添加在CommonMiddleware中间件之前
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+# ①CORS_ORIGIN_ALLOW_ALL为True，指定所有域名（IP）都可以访问后端接口，默认为False
+CORS_ORIGIN_ALLOW_ALL=True
+
+# # ②如果CORS_ORIGIN_ALLOW_ALL为False，则需要CORS_ORIGIN_WHITELIST指定能够访问后端接口的IP或域名列表
+# CORS_ORIGIN_WHITELIST=[
+#     'http://127.0.0.1:8080',
+#     'http://localhost:8080',
+#     'http://192.168.1.63:8080',
+#     'http://127.0.0.1:9000',
+#     'http://localhost:9000',
+# ]
+# 允许跨域时携带cookie，设置为True，默认为False　
+CORS_ALLOW_CREDENIALS=True
+
 
 ROOT_URLCONF = 'Dev04.urls'
 
