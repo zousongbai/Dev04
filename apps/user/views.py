@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 # 继承rest_framework视图中的APIView
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 # 导入序列化器类
 from .serializers import RegisterSerializer
 # 导入Response
@@ -10,17 +11,17 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class UserView(APIView):
-
-    def post(self, request, *args, **kwargs):
-        # 创建序列化器类serializer对象
-        serializer = RegisterSerializer(data=request.data)
-        # 对序列化器类进行校验
-        serializer.is_valid(raise_exception=True)
-        # 校验成功之后，再调用save()方法
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class UserView(CreateAPIView):
+    serializer_class = RegisterSerializer
+    # def post(self, request, *args, **kwargs):
+    #     # 创建序列化器类serializer对象
+    #     serializer = RegisterSerializer(data=request.data)
+    #     # 对序列化器类进行校验
+    #     serializer.is_valid(raise_exception=True)
+    #     # 校验成功之后，再调用save()方法
+    #     serializer.save()
+    #
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class UsernameIsExitedView(APIView):
     """
