@@ -1,14 +1,12 @@
 import logging
 from rest_framework.response import Response
-
-
 # 导入视图集
 from rest_framework import viewsets
 # 导入action装饰器
 from rest_framework.decorators import action
 from projects.models import Projects
 from interfaces.models import Interfaces
-
+from django.db.models import Count
 from rest_framework import permissions
 
 from .serializers import (ProjectsModelSerializer,
@@ -50,6 +48,42 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     queryset = Projects.objects.all()
     serializer_class = ProjectsModelSerializer
     permission_classes = [permissions.IsAuthenticated] # IsAuthenticated：必须登录才能访问
+
+    def list(self, request, *args, **kwargs):
+        # 继承父类的list()方法
+        response=super().list(request, *args, **kwargs)
+        # 改造的数据在data字典的results键中
+        results=response.data['results']
+        for item in results:
+            # item为一条项目数据所在的字典
+            # 需要获取当前项目所属的接口总数、用例总数、配置总数、套件总数
+            # 项目id
+            project_id = item.get('id')
+            # # 接口总数
+            # interface_count = Interfaces.objects.filter(project_id=project_id).count()
+            # # 接口信息
+            # interface_qs = Interfaces.objects.filter(project_id=project_id)
+            # # 项目所属接口所属所有用例总数
+            # for obj in interface_qs:
+            #     # 接口id
+            #     interface_id = obj.id
+            #     # 当前项目的用例总数
+            #     TestCase.ojbects.filter(interface_id=interface_id).count()
+
+            # a.使用.annotate()方法，那么会自动使用当前模型类的主键作为分组条件
+            # b.使用.annotate()方法里可以添加聚合函数，计算的名称为一般从表模型类名小写（还需要在外键字段上设置related_name）
+            # c.values可以指定需要查询的字段（默认为所用字段）
+            # d.可以给聚合函数指定别名，默认为testcases__count
+
+            interfaces_obj = Interfaces.objects.annotate(testcases=Count('testcases')).values('id', 'testcases'). \
+                filter(project_id=project_id)
+            # 备注：
+            # Interfaces.objects.annotate：对当前接口表id进行分组
+            # Count('testcases')：计算所属接口的用例总数
+            # values('id', 'testcases')：返回当前的接口id、testcases
+
+            Interfaces.objects.annotate(Count('testcases'))
+
     @action(methods=['get'],detail=False)
     def names(self,request,*args,**kwargs):
         """获取项目名称"""
