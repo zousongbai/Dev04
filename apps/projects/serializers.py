@@ -13,7 +13,7 @@ from .models import Projects
 from interfaces.models import Interfaces
 
 from interfaces.serializers import InterfacesModelSerializer
-from utils.datetime_fmt import datetime_fmt
+from utils import common
 
 class InterfacesNamesModelSerializer(serializers.ModelSerializer):
 
@@ -37,7 +37,7 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'create_time': {
                 'read_only': False,
-                # 'format': common.datetime_fmt(),
+                'format': common.datetime_fmt(),
             },
 
         }
