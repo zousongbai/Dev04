@@ -49,14 +49,15 @@ INSTALLED_APPS = [
 
     # 注册子应用
     # 格式：子应用名.apps.子应用名首字母大写Config，除了子应用名外，其他会自动提示
-    'projects.apps.ProjectsConfig',
+    'projects',
     'interfaces',  # 注册子应用，可以直接使用子应用名
     'user',
-
-    # 可以将某个目录（包）标记为SourceRoot，那么Pycharm会有智能提示
-    # 不是Python的特性
-    # 'apps.projects',
-    # 'apps.interfaces'
+    'testcases',
+    'configures',
+    'env',
+    'debugtalks',
+    'reports',
+    'testsuits',
 
 ]
 
@@ -117,7 +118,7 @@ DATABASES = {
         # 指定数据库使用的引擎
         'ENGINE': 'django.db.backends.mysql',
         # 指定数据库的名称
-        'NAME': 'dev04',
+        'NAME': 'dev04_dj',
         # 指定连接的数据库主机地址：域名和IP都可以
         'HOST': 'localhost',
         # 指定数据库的连接端口号：默认3306
@@ -261,7 +262,8 @@ LOGGING = {
             # 一个日志文件最大存放多大字节：如设置100M
             'maxBytes': 100 * 1024 * 1024,
             'backupCount': 10,
-            'formatter': 'verbose'
+            'formatter': 'verbose',
+            'encoding':'utf-8'
         },
     },
     # 定义日志器
