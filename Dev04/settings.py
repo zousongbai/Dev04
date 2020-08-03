@@ -296,5 +296,5 @@ JWT_AUTH = {
     #  days=1：一天后到期
 
     # 指定前端传递token值得前缀
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
