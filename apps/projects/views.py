@@ -14,7 +14,8 @@ from configures.models import Configures
 from testsuits.models import Testsuits
 from .serializers import (ProjectsModelSerializer,
                           ProjectsNameModelSerializer,
-                          InterfacesByProjectsIdModelSerializer1,
+                          InterfacesByProjectIdModelSerializer1,
+                          InterfacesByProjectIdModelSerializer,
                           )
 
 # 定义日志器：此处的名称要与全局日志器的日志保持一致
@@ -53,12 +54,15 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectsModelSerializer
     permission_classes = [permissions.IsAuthenticated]  # IsAuthenticated：必须登录才能访问
 
+    # （1）如果父类中有提供相关的逻辑，
+    # ①绝对部分不需要修改，只有少量要修改，则直接对父类中的action进行拓展。
+    # ②绝对部分都需要修改的话，那么直接自定义即可。
     def list(self, request, *args, **kwargs):
         # 继承父类的list()方法
         response = super().list(request, *args, **kwargs)
         # 改造的数据在data字典的results键中
         results = response.data['results']
-        data_list=[]
+        data_list = []
         for item in results:
             # item为一条项目数据所在的字典
             # 需要获取当前项目所属的接口总数、用例总数、配置总数、套件总数
@@ -120,17 +124,17 @@ class ProjectsViewSet(viewsets.ModelViewSet):
                 configures_count += one_dict.get('configures')
 
             # 获取项目下的套件总数　
-            testsuits_count=Testsuits.objects.filter(project_id=project_id).count()
+            testsuits_count = Testsuits.objects.filter(project_id=project_id).count()
 
             # 改造results
-            item['interfaces']=interfaces_count # 获取项目下的接口总数
-            item['testcases'] = testcases_count # 每一个接口下面的用例总数
+            item['interfaces'] = interfaces_count  # 获取项目下的接口总数
+            item['testcases'] = testcases_count  # 每一个接口下面的用例总数
             item['testsuits'] = testsuits_count  # 获取项目下的套件总数　
             item['configures'] = configures_count  # 获取项目下的配置总数
 
             data_list.append(item)
         # 覆盖之前的results
-        response.data['results']=data_list
+        response.data['results'] = data_list
         # 返回response
         return response
 
@@ -145,15 +149,18 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # 默认methods=['get']
     # 如果需要传递主键id，那么detail = True
     def interfaces(self, request, *args, **kwargs):
-        # 获取当前的模型类对象
-        instance = self.get_object()
-        # 进行过滤和分页操作
-        # ①过滤
-        # qs = self.filter_queryset(self.get_queryset())
-        qs = Interfaces.objects.filter(projects=instance)
+        # # 获取当前的模型类对象
+        # instance = self.get_object()
+        # # 进行过滤和分页操作
+        # # ①过滤
+        # # qs = self.filter_queryset(self.get_queryset())
+        # # qs = Interfaces.objects.filter(projects=instance)
+        #
+        # serializer_obj = self.get_serializer(instance=instance)
+        # return Response(serializer_obj.data)
 
-        serializer_obj = self.get_serializer(instance=instance)
-        return Response(serializer_obj.data)
+        # 调用父类的retrieve()方法
+        return self.retrieve(request, *args, **kwargs)
 
     def get_serializer_class(self):
         """重写get_serializer_class"""
@@ -162,7 +169,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             # self.action：获取当前的action
             return ProjectsNameModelSerializer
         elif self.action == 'interfaces':
-            # return InterfacesByProjectsIdModelSerializer
-            return InterfacesByProjectsIdModelSerializer1
+            return InterfacesByProjectIdModelSerializer
+            # return InterfacesByProjectIdModelSerializer1
         else:
             return self.serializer_class

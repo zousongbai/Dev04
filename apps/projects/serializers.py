@@ -59,7 +59,7 @@ class InterfacesByProjectIdModelSerializer(serializers.ModelSerializer):
         model = Projects
         fields = ('interfaces', )
 
-class InterfacesByProjectsIdModelSerializer1(serializers.ModelSerializer):
+class InterfacesByProjectIdModelSerializer1(serializers.ModelSerializer):
     """通过项目id获取接口信息：解决分页问题"""
     # interfaces=InterfacesNameModelSerializer(many=True,read_only=True)
 
