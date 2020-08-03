@@ -36,7 +36,8 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
             'create_time': {
-                'read_only': False,
+                # 只需要输出不需要输入
+                'read_only': True,
                 'format': common.datetime_fmt(),
             },
 
