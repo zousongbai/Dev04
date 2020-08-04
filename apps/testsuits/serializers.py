@@ -43,7 +43,19 @@ class TestsuitsModelSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        print(1)
         pass
+        pass
+
+
+    def update(self, instance, validated_data):
+        # 如果project_id在validated_data字典中
+        if 'project_id' in validated_data:
+            # 如果有，则将project_id删除
+            project = validated_data.pop('project_id')
+            # 再创建一个project_id
+            validated_data['project'] = project
+            return super().update(instance, validated_data)
 
 
 
