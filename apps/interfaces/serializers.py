@@ -14,34 +14,28 @@ from projects.models import Projects
 
 
 # 使用模型序列化器类：简化序列化器类中字段的创建
-# （1）需要继承ModelSerializer
+# 需要继承ModelSerializer
 class InterfacesModelSerializer(serializers.ModelSerializer):
-    # 关联字段的三种形式
-    # ①会将父表的主键id值作为返回值
-    # 外键关联字段：PrimaryKeyRelatedField，外键名称为模型类中的字段
-    # projects = serializers.PrimaryKeyRelatedField(help_text='所属项目', label='所属项目', queryset=Projects.objects.all())
-    # 备注：项目关联的ID一定要在Projects查询集里面
-    # 子表当中的模型序列化器类继承ModelSerializer之后，会自动创建：PrimaryKeyRelatedField字段
 
-    # ②会将父表对应对象的__str__方法结果返回
-    projects=serializers.StringRelatedField()
-    # StringRelatedField的作用：在序列化输出的时候，它不会返回项目ID（即主键id），而是返回父表对应对象的打印值
-
-    # ③会将父表对应对象的某个字段的值返回
-    # slug_field：指定序列化输出的时候，显示哪一个字段
-    # projects=serializers.SlugRelatedField(slug_field='leader',read_only=True)
-
-    # 可以将某个序列化器对象定义为字段，支持Field中的所有参数
-    # projects=ProjectsModelSerializer(label='所属项目信息',help_text='所属项目信息',read_only=True)
+    # project：项目名称
+    project=serializers.StringRelatedField()
+    # 项目ID：只需要输出
+    # project_id=serializers.PrimaryKeyRelatedField(write_only=True,queryset=Projects.objects.all())
+    # 或使用IntegerField，与PrimaryKeyRelatedField作用是一样的，但要指定校验器validators，不能指定查询集
+    # project_id = serializers.IntegerField(write_only=True, validators=[])
 
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定
-        # （2）需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
+        # 需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
         # 指定要生成的模型
         model=Interfaces
-        # （3）fields类属性来指定，模型类中哪些字段需要输入或输出
+        # fields类属性来指定，模型类中哪些字段需要输入或输出
         # 指定当前模型类的字段
-        # ①将模型类所有的字段都生成序列化器类中的字段
+        # 将模型类所有的字段都生成序列化器类中的字段
         fields='__all__'
+    def create(self, validated_data):
+        pass
+
+
 
 

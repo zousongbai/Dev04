@@ -14,6 +14,8 @@ from interfaces.models import Interfaces
 
 from interfaces.serializers import InterfacesModelSerializer
 from utils import common
+# 导入DebugTalks
+from debugtalks.models import DebugTalks
 
 class InterfacesNamesModelSerializer(serializers.ModelSerializer):
 
@@ -42,6 +44,12 @@ class ProjectsModelSerializer(serializers.ModelSerializer):
             },
 
         }
+    def create(self, validated_data):
+        # ①调用父类的create()方法，返回项目的模型类对象
+        # 在创建项目时，同时创建一个空的debugtalk.py文件
+        project=super().create(validated_data)
+        DebugTalks.objects.create(project=project)
+        return project
 
 class ProjectsNameModelSerializer(serializers.ModelSerializer):
     """只返回id和name"""

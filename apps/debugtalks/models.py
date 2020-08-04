@@ -4,6 +4,7 @@ from utils.base_models import BaseModel
 
 
 class DebugTalks(BaseModel):
+    # id自动添加
     id = models.AutoField(verbose_name='id主键', primary_key=True, help_text='id主键')
     name = models.CharField('debugtalk文件名称', max_length=200, default='debugtalk.py', help_text='debugtalk文件名称')
     # debugtalk：存放的是debugtalk.py文件的代码
