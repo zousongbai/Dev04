@@ -48,5 +48,6 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('', include('projects.urls')),  # 使用include将子路由的路径传进去
     # 因为子路由env已经添加了前缀，所以可以空出来，直接用
-    path('', include('envs.urls'))
+    path('', include('envs.urls')),
+    path('', include('testsuits.urls'))
 ]
