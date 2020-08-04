@@ -26,3 +26,14 @@ class TestsuitsViewSet(ModelViewSet):
     #
     #     # 或下面三目写法
     #     return EnvsNamesSerializer if self.action == 'names' else  self.serializer_class
+
+
+    # 重写retrieve
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = {
+            'name': instance.name,
+            'project_id': instance.project_id,
+            'include': instance.include
+        }
+        return Response(data)

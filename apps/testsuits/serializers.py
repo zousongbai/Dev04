@@ -43,8 +43,7 @@ class TestsuitsModelSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        print(1)
-        pass
+
         pass
 
 
