@@ -3,14 +3,36 @@
 # @ProjectName  :Dev04
 # @File         : serializers.py
 # @Time         : 2020/7/2 11:51
-
+import re
 from rest_framework import serializers
 # 导入内置的校验器
 from rest_framework import validators
 # 导入模型类
 from .models import Testsuits
 from projects.models import Projects
+from interfaces.models import Interfaces
 from utils.common import datetime_fmt
+
+
+def validate_include(value):
+    # 正则：以左边的方括号开头，以右边的方括号结尾，里面必须是数字，数字至少一位
+    # ^：以什么开头。*：以什么结尾
+    obj = re.match(r'^\[\d+(,\d+)*\]$', value)
+    # 如果没有匹配成功
+    if obj is None:
+        raise serializers.ValidationError('参数格式有误')
+    # 如果匹配成功
+    else:
+        res = obj.group()
+        try:
+            data = eval(res)
+        except:
+            raise serializers.ValidationError('参数格式有误')
+        # 如果数据没有问题，列表是一个正常的列表格式，则进行for循环迭代
+        for item in data:
+            # 去接口表去查询接口id是否存在
+            if not Interfaces.objects.filter(id=item).exists():
+                raise serializers.ValidationError(f'接口id【{item}】不存在')
 
 class TestsuitsModelSerializer(serializers.ModelSerializer):
 
@@ -38,13 +60,17 @@ class TestsuitsModelSerializer(serializers.ModelSerializer):
             },
             'include': {
                 # 只需要输入
-                'write_only': True
+                # 'write_only': True
+                'validators': [validate_include]
             },
         }
 
     def create(self, validated_data):
-
-        pass
+        project = validated_data.pop('project_id')
+        validated_data['project'] = project
+        # testsuit = Testsuits.objects.create(**validated_data)
+        # return testsuit
+        return super().create(validated_data)
 
 
     def update(self, instance, validated_data):
