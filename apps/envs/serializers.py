@@ -33,8 +33,6 @@ class EnvsModelSerializer(serializers.ModelSerializer):
             },
 
         }
-    def create(self, validated_data):
-        pass
 
 class EnvsNamesSerializer(serializers.ModelSerializer):
     class Meta:  # 类名固定
