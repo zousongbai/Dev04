@@ -298,3 +298,8 @@ JWT_AUTH = {
     # 指定前端传递token值得前缀
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
+
+# 测试报告存放目录
+# 在全局配置文件settings.py文件中定义变量，变量名要大写
+# django.conf.setting
+REPORT_DIR = os.path.join(BASE_DIR,'reports')

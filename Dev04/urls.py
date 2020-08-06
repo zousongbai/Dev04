@@ -52,4 +52,6 @@ urlpatterns = [
     path('', include('testsuits.urls')),
     path('', include('interfaces.urls')),
     path('', include('debugtalks.urls')),
+    path('', include('reports.urls')),
+
 ]
