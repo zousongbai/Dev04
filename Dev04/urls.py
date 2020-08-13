@@ -53,5 +53,6 @@ urlpatterns = [
     path('', include('interfaces.urls')),
     path('', include('debugtalks.urls')),
     path('', include('reports.urls')),
+    path('', include('testcases.urls')),
 
 ]

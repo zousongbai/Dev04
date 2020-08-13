@@ -18,7 +18,7 @@ class InterfacesProjectsModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interfaces
-        fields = ('name', 'pid', 'iid')
+        fields = ('name', 'pid', 'iid','project')
 
     def validate(self, attrs):
         """多字段的灵活校验"""
@@ -57,3 +57,12 @@ class TestcasesModelSerializer(serializers.ModelSerializer):
         iid = validated_data.pop('interface').get('iid')
         validated_data['interface_id'] = iid
         return super().update(instance, validated_data)
+
+
+class TestcasesRunSerializer(serializers.ModelSerializer):
+    env_id = serializers.IntegerField(label='环境变量ID', help_text='环境变量ID',
+                                      write_only=True, validators=[validates.is_exised_env_id])
+
+    class Meta:
+        model = Testcases
+        fields = ('id', 'env_id')
