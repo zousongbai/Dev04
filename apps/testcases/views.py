@@ -118,13 +118,14 @@ class TestcasesViewSet(ModelViewSet):
         response = super().create(request, *args, **kwargs)
         env_id = response.data.serializer.validated_data.get('env_id')
         testcase_dir_path = os.path.join(settings.SUITES_DIR, datetime.strftime(datetime.now(), '%Y%m%d%H%M%S%f'))
-
+        # 创建一个以时间戳命名的路径
+        os.mkdir(testcase_dir_path)
         env = Envs.objects.filter(id=env_id).first()
         # 生成yaml用例文件
         common.generate_testcase_file(instance, env, testcase_dir_path)
 
         # 运行用例（生成报告）
-        pass
+        common.run_testcase(instance, testcase_dir_path)
 
     def get_serializer_class(self):
         return serializers.TestcasesRunSerializer if self.action == 'run' else self.serializer_class
