@@ -27,7 +27,10 @@ sys.path.append(os.path.join(BASE_DIR, 'apps'))
 SECRET_KEY = '@(35-t#w!nxzp3nuky6$8xl2fch*i!-sgk_omj4n(bpszg_7r@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+# 需要关掉调试功能
+DEBUG = False
+
 
 # 可以使用哪些IP或者域名来访问系统
 # 默认为空，可以使用127.0.0.1或者localhost
@@ -304,3 +307,7 @@ JWT_AUTH = {
 # django.conf.setting
 REPORT_DIR = os.path.join(BASE_DIR,'reports')
 SUITES_DIR = os.path.join(BASE_DIR, 'suites')
+# 收集静态文件
+STATIC_ROOT=os.path.join(BASE_DIR, 'static')
+
+

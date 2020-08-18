@@ -63,6 +63,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     # ①绝对部分不需要修改，只有少量要修改，则直接对父类中的action进行拓展。
     # ②绝对部分都需要修改的话，那么直接自定义即可。
     def list(self, request, *args, **kwargs):
+
         # 继承父类的list()方法
         response = super().list(request, *args, **kwargs)
         # 改造的数据在data字典的results键中
