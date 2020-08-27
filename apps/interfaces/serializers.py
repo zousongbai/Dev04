@@ -23,8 +23,8 @@ class InterfacesModelSerializer(serializers.ModelSerializer):
     project = serializers.StringRelatedField(label='所属项目名称', help_text='所属项目名称')
     # 项目ID：只需要输出
     project_id = serializers.PrimaryKeyRelatedField(queryset=Projects.objects.all(),
-                                                    label='项目id', help_text='项目id',
-                                                    write_only=True)
+                                                    label='项目id', help_text='项目id'
+                                                    )
 
     # 在定义模型序列化器类时，需要指定根据哪个模型类来生成这些字段
     class Meta:  # 类名固定

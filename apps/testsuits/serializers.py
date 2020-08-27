@@ -17,7 +17,7 @@ from utils.common import datetime_fmt
 def validate_include(value):
     # 正则：以左边的方括号开头，以右边的方括号结尾，里面必须是数字，数字至少一位
     # ^：以什么开头。*：以什么结尾
-    obj = re.match(r'^\[\d+(,\d+)*\]$', value)
+    obj = re.match(r'^\[\d+(, *\d+)*\]$', value) # (, *\d+):*号表示前面的空格可有可无
     # 如果没有匹配成功
     if obj is None:
         raise serializers.ValidationError('参数格式有误')

@@ -211,7 +211,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             common.generate_testcase_file(testcase_obj, env, testcase_dir_path)
 
         # 运行用例（生成报告）
-        common.run_testcase(instance, testcase_dir_path)
+        return common.run_testcase(instance, testcase_dir_path)
 
     def get_serializer_class(self):
         """重写get_serializer_class"""
@@ -227,3 +227,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             # return InterfacesByProjectIdModelSerializer1
         else:
             return self.serializer_class
+    def perform_create(self, serializer):
+        if self.action=='run':
+            pass
+        else:
+            serializer.save()
