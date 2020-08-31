@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'debugtalks',
     'reports',
     'testsuits',
+    'summary',
 
 ]
 

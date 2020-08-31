@@ -12,6 +12,7 @@ from .models import Testsuits
 from projects.models import Projects
 from interfaces.models import Interfaces
 from utils.common import datetime_fmt
+from utils import validates
 
 
 def validate_include(value):
@@ -83,5 +84,15 @@ class TestsuitsModelSerializer(serializers.ModelSerializer):
             return super().update(instance, validated_data)
 
 
+class TestsuitsRunSerializer(serializers.ModelSerializer):
+    """
+    通过套件来运行测试用例序列化器
+    """
+    env_id = serializers.IntegerField(write_only=True,
+                                      help_text='环境变量ID',
+                                      validators=[validates.is_exised_env_id])
 
+    class Meta:
+        model = Testsuits
+        fields = ('id', 'env_id')
 

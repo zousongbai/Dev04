@@ -1,4 +1,6 @@
 import os
+import json
+
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import permissions
@@ -28,11 +30,27 @@ class ReportsViewSet(mixins.ListModelMixin,
     # 获取环境变量的名称和id
 
 
-    # def list(self, request, *args, **kwargs):
-    #     pass
-    #
-    # def retrieve(self, request, *args, **kwargs):
-    #     pass
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        results = response.data['results']
+        data_list = []
+        for item in results:
+            # 将1转化为Pass，将0转化为Fail
+            result = 'Pass' if item['result'] else 'Fail'
+            item['result'] = result
+            data_list.append(item)
+
+        response.data['results'] = data_list
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        try:
+            # 将summary json字符串转化为Python中的字典类型
+            response.data['summary'] = json.loads(response.data['summary'], encoding='utf-8')
+        except Exception as e:
+            pass
+        return response
 
 
     @action(detail=True)

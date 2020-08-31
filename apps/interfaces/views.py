@@ -1,3 +1,8 @@
+import os
+from datetime import datetime
+
+
+from django.conf import settings
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions
 from rest_framework.decorators import action
@@ -100,6 +105,31 @@ class InterfacesViewSet(ModelViewSet):
         response = self.retrieve(request, *args, **kwargs)
         response.data = response.data['configures']
         return response
+
+    @action(methods=['post'], detail=True)
+    def run(self, request, *args, **kwargs):
+        # 取出并构造参数
+        instance = self.get_object()
+        response = super().create(request, *args, **kwargs)
+        env_id = response.data.serializer.validated_data.get('env_id')
+        testcase_dir_path = os.path.join(settings.SUITES_DIR, datetime.strftime(datetime.now(), '%Y%m%d%H%M%S%f'))
+        # 创建一个以时间戳命名的路径
+        os.mkdir(testcase_dir_path)
+        env = Envs.objects.filter(id=env_id).first()
+
+        testcase_objs = Testcases.objects.filter(interface=instance)
+        if not testcase_objs.exists():  # 如果此接口下没有用例, 则无法运行
+            data = {
+                'ret': False,
+                'msg': '此接口下无用例, 无法运行'
+            }
+            return Response(data, status=400)
+
+        for one_obj in testcase_objs:
+            common.generate_testcase_file(one_obj, env, testcase_dir_path)
+
+        # 运行用例
+        return common.run_testcase(instance, testcase_dir_path)
 
     def get_serializer_class(self):
         """
