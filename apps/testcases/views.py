@@ -30,11 +30,13 @@ class TestcasesViewSet(ModelViewSet):
 
         # 用例前置信息
         # testcase_include = eval(testcase_obj.include)
+        # 用json.loads将数据库tb_testcases中include字段的json 格式的字符串转化为python中的字典。
         testcase_include = json.loads(testcase_obj.include, encoding='utf-8')
 
         # 用例请求信息
         # testcase_request = eval(testcase_obj.request)
         testcase_request = json.loads(testcase_obj.request, encoding='utf-8')
+        # testcase_request取出后，只是一个大字典，先获取最外层key:test，再获取里层key：request
         testcase_request_datas = testcase_request.get('test').get('request')
 
         # 处理用例的validate列表

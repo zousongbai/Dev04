@@ -110,5 +110,13 @@ class InterfacesViewSet(ModelViewSet):
             return serializers.TestcasesByInterfaceIdModelSerializer
         elif self.action == "configs":
             return serializers.ConfiguresByInterfaceIdModelSerializer
+        elif self.action == "run":
+            return serializers.InterfaceRunSerializer
         else:
             return self.serializer_class
+
+    def perform_create(self, serializer):
+        if self.action == 'run':
+            pass
+        else:
+            serializer.save()

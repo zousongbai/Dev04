@@ -18,7 +18,7 @@ from utils import common
 from testsuits.models import Testsuits
 from .serializers import (ProjectsModelSerializer,
                           ProjectsNameModelSerializer,
-                          InterfacesByProjectIdModelSerializer1,
+                          # InterfacesByProjectIdModelSerializer1,
                           InterfacesByProjectIdModelSerializer,
                           ProjectsRunSerializer,
                           )
@@ -147,9 +147,13 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=False)
     def names(self, request, *args, **kwargs):
         """获取项目名称"""
-        # 不对name进行分页
-        # 调用父类list的方法
-        return self.list(request, *args, **kwargs)
+        # # 不对name进行分页
+        # # 调用父类list的方法
+        # return self.list(request, *args, **kwargs)
+
+        qs = self.get_queryset()
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
     @action(detail=True)
     # 默认methods=['get']

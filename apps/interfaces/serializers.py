@@ -13,7 +13,7 @@ from projects.models import Projects
 from testcases.models import Testcases
 from configures.models import Configures
 from utils import common
-
+from utils import validates
 
 # 使用模型序列化器类：简化序列化器类中字段的创建
 # 需要继承ModelSerializer
@@ -89,4 +89,14 @@ class ConfiguresByInterfaceIdModelSerializer(serializers.ModelSerializer):
         model = Interfaces
         fields = ('configures', )
 
+class InterfaceRunSerializer(serializers.ModelSerializer):
+    """
+    通过接口来运行测试用例序列化器
+    """
+    env_id = serializers.IntegerField(write_only=True,
+                                      help_text='环境变量ID',
+                                      validators=[validates.is_exised_env_id])
 
+    class Meta:
+        model = Interfaces
+        fields = ('id', 'env_id')

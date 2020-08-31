@@ -31,7 +31,6 @@ SECRET_KEY = '@(35-t#w!nxzp3nuky6$8xl2fch*i!-sgk_omj4n(bpszg_7r@'
 # 需要关掉调试功能
 DEBUG = False
 
-
 # 可以使用哪些IP或者域名来访问系统
 # 默认为空，可以使用127.0.0.1或者localhost
 ALLOWED_HOSTS = ['*']
@@ -76,7 +75,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 # ①CORS_ORIGIN_ALLOW_ALL为True，指定所有域名（IP）都可以访问后端接口，默认为False
-CORS_ORIGIN_ALLOW_ALL=True
+CORS_ORIGIN_ALLOW_ALL = True
 
 # # ②如果CORS_ORIGIN_ALLOW_ALL为False，则需要CORS_ORIGIN_WHITELIST指定能够访问后端接口的IP或域名列表
 # CORS_ORIGIN_WHITELIST=[
@@ -87,8 +86,7 @@ CORS_ORIGIN_ALLOW_ALL=True
 #     'http://localhost:9000',
 # ]
 # 允许跨域时携带cookie，设置为True，默认为False　
-CORS_ALLOW_CREDENIALS=True
-
+CORS_ALLOW_CREDENIALS = True
 
 ROOT_URLCONF = 'Dev04.urls'
 
@@ -266,7 +264,7 @@ LOGGING = {
             'maxBytes': 100 * 1024 * 1024,
             'backupCount': 10,
             'formatter': 'verbose',
-            'encoding':'utf-8'
+            'encoding': 'utf-8'
         },
     },
     # 定义日志器
@@ -305,9 +303,7 @@ JWT_AUTH = {
 # 测试报告存放目录
 # 在全局配置文件settings.py文件中定义变量，变量名要大写
 # django.conf.setting
-REPORT_DIR = os.path.join(BASE_DIR,'reports')
+REPORT_DIR = os.path.join(BASE_DIR, 'reports')
 SUITES_DIR = os.path.join(BASE_DIR, 'suites')
 # 收集静态文件
-STATIC_ROOT=os.path.join(BASE_DIR, 'static')
-
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
