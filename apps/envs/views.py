@@ -8,7 +8,9 @@ from .models import Envs
 # 导入序列化器类
 from .serializers import EnvsModelSerializer,EnvsNamesSerializer
 class EnvsViewSet(ModelViewSet):
+    # 查询集
     queryset = Envs.objects.all()
+    # 序列化器类
     serializer_class = EnvsModelSerializer
     # 指定认证
     permission_classes =[permissions.IsAuthenticated]
@@ -18,7 +20,7 @@ class EnvsViewSet(ModelViewSet):
 
     # detail如果要传外键id，则设为True；不传外键id，则设为False
     @action(detail=False)
-    def name(self,request, *args, **kwargs):
+    def names(self,request, *args, **kwargs):
         # 获取查询集
         qs=self.get_queryset()
         return Response(self.get_serializer(qs,many=True).data)

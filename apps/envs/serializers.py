@@ -34,6 +34,9 @@ class EnvsModelSerializer(serializers.ModelSerializer):
 
         }
 
+    def create(self, validated_data):
+        pass
+
 class EnvsNamesSerializer(serializers.ModelSerializer):
     class Meta:  # 类名固定
         # 需要在Meta内部类这两个指定model类属性：需要按照哪一个模型类创建
