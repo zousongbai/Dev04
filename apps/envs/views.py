@@ -20,7 +20,7 @@ class EnvsViewSet(ModelViewSet):
 
     # detail如果要传外键id，则设为True；不传外键id，则设为False
     @action(detail=False)
-    def names(self,request, *args, **kwargs):
+    def name(self,request, *args, **kwargs):
         # 获取查询集
         qs=self.get_queryset()
         return Response(self.get_serializer(qs,many=True).data)
