@@ -167,7 +167,7 @@ def generate_testcase_file(instance, env, testcase_dir_path):
     # 将嵌套字典的列表转换为yaml文件
     with open(os.path.join(testcase_dir_path, instance.name + '.yaml'), 'w', encoding='utf-8') as f:
         # 生成yaml文件使用dump
-        yaml.dump(testcase_list, f, all_unicode=True)
+        yaml.dump(testcase_list, f, allow_unicode=True)
         # 备注：all_unicode：允许使用unicode编码
 
 
@@ -179,7 +179,7 @@ def run_testcase(instance, testcase_dir_path):
     try:
         # 使用runner.run运行用例，传入目录testcase_dir_path
         runner.run(testcase_dir_path)
-    except:
+    except Exception as e:
         res = {'ret': False, 'msg': '用例执行失败'}
         return Response(res, status=400)
 
