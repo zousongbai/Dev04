@@ -33,6 +33,10 @@ class EnvsModelSerializer(serializers.ModelSerializer):
             },
 
         }
+    def create(self, validated_data):
+        envs = super().create(validated_data)
+        return envs
+
 
 class EnvsNamesSerializer(serializers.ModelSerializer):
     class Meta:  # 类名固定

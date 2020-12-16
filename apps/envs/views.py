@@ -8,7 +8,9 @@ from .models import Envs
 # 导入序列化器类
 from .serializers import EnvsModelSerializer,EnvsNamesSerializer
 class EnvsViewSet(ModelViewSet):
+    # 查询集
     queryset = Envs.objects.all()
+    # 序列化器类
     serializer_class = EnvsModelSerializer
     # 指定认证
     permission_classes =[permissions.IsAuthenticated]
