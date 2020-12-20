@@ -167,7 +167,7 @@ def generate_testcase_file(instance, env, testcase_dir_path):
     # 将嵌套字典的列表转换为yaml文件
     with open(os.path.join(testcase_dir_path, instance.name + '.yaml'), 'w', encoding='utf-8') as f:
         # 生成yaml文件使用dump
-        yaml.dump(testcase_list, f, all_unicode=True)
+        yaml.dump(testcase_list, f, allow_unicode=True)
         # 备注：all_unicode：允许使用unicode编码
 
 
