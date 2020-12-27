@@ -236,3 +236,5 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             pass
         else:
             serializer.save()
+
+

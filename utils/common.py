@@ -52,6 +52,14 @@ def create_report(runner, report_name=None):
     for item in runner.summary['details']:
         try:
             for record in item['records']:
+                # 对时间戳进行处理
+                try:
+                    time_stamp = int(record['meta_data']['request']['start_timestamp'])
+                    record['meta_data']['request']['start_timestamp'] = \
+                        datetime.fromtimestamp(time_stamp).strftime('%Y-%m-%d %H:%M:%S')
+                except Exception:
+                    pass
+
                 record['meta_data']['response']['content'] = record['meta_data']['response']['content']. \
                     decode('utf-8')
                 record['meta_data']['response']['cookies'] = dict(record['meta_data']['response']['cookies'])
